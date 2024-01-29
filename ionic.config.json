@@ -1,0 +1,7 @@
+{
+  "name": "wave-report",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
