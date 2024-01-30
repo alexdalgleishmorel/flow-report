@@ -10,6 +10,7 @@ import './DailyFlowsContainer.css';
 export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
     if (flowData.length) {
+        const selectedDate = new Date(flowData[selectedIndex].day);
         return (
             <div className="content">
                 <div className="dateSelector">
@@ -20,7 +21,7 @@ export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
                         onClick={() => selectedIndex ? setSelectedIndex(selectedIndex-1) : setSelectedIndex(selectedIndex) }
                     >
                     </IonIcon>
-                    <IonText color='primary'>{flowData[selectedIndex].day}</IonText>
+                    <IonText color='primary'>{selectedDate.toDateString()}</IonText>
                     <IonIcon 
                         color={selectedIndex < flowData.length-1 ? '' : 'light'} 
                         icon={chevronForwardOutline} 
