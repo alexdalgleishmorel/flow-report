@@ -81,7 +81,11 @@ function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
                     title: (data: any) => {
                         const date: Date = new Date();
                         date.setHours(data[0].label, 0, 0, 0);
-                        return date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+                        const from: string = date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+                        date.setHours(date.getHours()+1);
+                        const to: string = date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+
+                        return from.concat(' - ').concat(to);
                     },
                     label: (data: any) => ''.concat(data.raw).concat(' m³/s')
                 }
