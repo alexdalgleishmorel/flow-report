@@ -74,7 +74,18 @@ function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
     
     const options = {
         plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+                displayColors: false,
+                callbacks: {
+                    title: (data: any) => {
+                        const date: Date = new Date();
+                        date.setHours(data[0].label, 0, 0, 0);
+                        return date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+                    },
+                    label: (data: any) => ''.concat(data.raw).concat(' m³/s')
+                }
+            }
         }
     };
 
