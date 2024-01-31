@@ -14,10 +14,12 @@ interface UpperBannerProps {
 function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
     const [targetDateRange, setTargetDateRange] = useState<Date[]>([]);
     const [countdown, setCountdown] = useState<string>('');
+    const [countdownCompleted, setCountdownCompleted] = useState(false);
 
     useEffect(() => {
         setTargetDateRange(calculateTargetDateRange(targetFlow, flowData));
-    }, [targetFlow, flowData]);
+        setCountdownCompleted(false);
+    }, [targetFlow, flowData, countdownCompleted]);
 
     useEffect(() => {
         setCountdown('');
@@ -41,6 +43,8 @@ function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
                 countdownString += hours ? `${hours}h ` : '';
                 countdownString += minutes ? `${minutes}m` : '';
                 setCountdown(countdownString);
+            } else {
+                setCountdownCompleted(true);
             }
         }
     };
