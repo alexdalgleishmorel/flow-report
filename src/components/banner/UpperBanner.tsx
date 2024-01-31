@@ -35,7 +35,6 @@ function UpperBanner({flowData}: { flowData: FlowData[] }) {
                 let countdownString = '';
                 countdownString += hours ? `${hours}h ` : '';
                 countdownString += minutes ? `${minutes}m` : '';
-                console.log(countdownString);
                 setCountdown(countdownString);
             }
         }
