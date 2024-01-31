@@ -17,8 +17,9 @@ function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
     const [countdownCompleted, setCountdownCompleted] = useState(false);
 
     useEffect(() => {
-        setTargetDateRange(calculateTargetDateRange(targetFlow, flowData));
         setCountdownCompleted(false);
+        setTargetDateRange([]);
+        setTargetDateRange(calculateTargetDateRange(targetFlow, flowData));
     }, [targetFlow, flowData, countdownCompleted]);
 
     useEffect(() => {
@@ -37,9 +38,12 @@ function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
             const difference = targetDate.getTime() - now.getTime();
 
             if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
                 const minutes = Math.floor((difference / (1000 * 60)) % 60);
+                
                 let countdownString = '';
+                countdownString += days ? `${days}d ` : '';
                 countdownString += hours ? `${hours}h ` : '';
                 countdownString += minutes ? `${minutes}m` : '';
                 setCountdown(countdownString);
@@ -57,7 +61,7 @@ function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
             </div> : null}
             {isInsideTargetDateRange(targetDateRange) || isIndefiniteTargetDateRange(targetDateRange) ? <div className='titleValueStacked'>
                 <IonText color='medium' className='title'>ACTIVE FLOW</IonText>
-                <IonIcon color='primary' icon={waterOutline} size='large'></IonIcon>
+                <IonIcon color='success' icon={waterOutline} size='large'></IonIcon>
             </div> : null}
             <div className='titleValueStacked'>
                 <IonText color='medium' className='title'>TARGET FLOW</IonText>

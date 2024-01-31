@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 
 import './DailyFlowsContainer.css';
 
-export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
+interface DailyFlowsContainerProps {
+    flowData: FlowData[];
+    targetFlow: number;
+}
+
+export function DailyFlowsContainer({flowData, targetFlow}: DailyFlowsContainerProps) {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
     if (flowData.length) {
@@ -30,7 +35,7 @@ export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
                     >
                     </IonIcon>
                 </div>
-                <DailyFlowsChart flowData={flowData[selectedIndex]}></DailyFlowsChart>
+                <DailyFlowsChart flowData={flowData[selectedIndex]} targetFlow={targetFlow}></DailyFlowsChart>
             </div>
         );
     }

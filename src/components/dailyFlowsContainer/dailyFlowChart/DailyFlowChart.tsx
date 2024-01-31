@@ -1,4 +1,4 @@
-import { FlowData } from "../../../pages/Home";
+import { FlowData, FlowDataPoint } from "../../../pages/Home";
 
 import './DailyFlowChart.css';
 
@@ -23,32 +23,66 @@ ChartJS.register(
 
 import { Bar } from 'react-chartjs-2';
 
-function BarChart({flowData}: { flowData: FlowData }) {
-    
+interface DailyFlowsChartProps {
+    flowData: FlowData;
+    targetFlow: number;
+}
+
+function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
+    let today = new Date();
+    const currentHour = today.getHours();
+    today.setHours(0, 0, 0, 0);
+
+    const isActiveFlow = (dataPoint: FlowDataPoint): boolean => {
+        return flowData.day.getTime() === today.getTime() && dataPoint.hour === currentHour && dataPoint.volume >= targetFlow;
+    };
+
+    const shouldGreyData = (dataPoint: FlowDataPoint): boolean => {
+        return flowData.day < today || 
+            (flowData.day.getTime() === today.getTime() && dataPoint.hour < currentHour) ||
+            dataPoint.volume < targetFlow;
+    }
+
     const data = {
         labels: flowData.dataPoints.map(dataPoint => dataPoint.hour),
         datasets: [
             {
                 label: 'Flow',
                 data: flowData.dataPoints.map(dataPoint => dataPoint.volume),
-                backgroundColor: [
-                'rgba(54, 162, 235, 0.2)',
-                ],
-                borderColor: [
-                'rgba(54, 162, 235, 1)',
-                ],
+                backgroundColor: flowData.dataPoints.map(dataPoint => {
+                    if (isActiveFlow(dataPoint)) {
+                        return 'rgba(47, 223, 117, 0.2)';
+                    }
+                    if (shouldGreyData(dataPoint)) {
+                        return 'rgba(50, 50, 50, 0.2)';
+                    }
+                    return 'rgba(54, 162, 235, 0.2)';
+                }),
+                borderColor: flowData.dataPoints.map(dataPoint => {
+                    if (isActiveFlow(dataPoint)) {
+                        return 'rgba(47, 223, 117, 1)';
+                    }
+                    if (shouldGreyData(dataPoint)) {
+                        return 'rgba(50, 50, 50, 1)';
+                    }
+                    return 'rgba(54, 162, 235, 1)';
+                }),
                 borderWidth: 1
             }
         ]
     };
     
-    const options = {};
+    const options = {
+        plugins: {
+            legend: { display: false }
+        }
+    };
 
     return <Bar data={data} options={options} />;
 };
 
-export function DailyFlowsChart({flowData}: { flowData: FlowData }) {
-    return <BarChart flowData={flowData}></BarChart>;
+export function DailyFlowsChart({flowData, targetFlow}: DailyFlowsChartProps) {
+    return <BarChart flowData={flowData} targetFlow={targetFlow}></BarChart>;
 }
 
 export default DailyFlowsChart;
