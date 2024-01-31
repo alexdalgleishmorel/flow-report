@@ -64,7 +64,7 @@ function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
                 <IonIcon color='success' icon={waterOutline} size='large'></IonIcon>
             </div> : null}
             <div className='titleValueStacked'>
-                <IonText color='medium' className='title'>TARGET FLOW</IonText>
+                <IonText color='medium' className='title'>MINIMUM FLOW</IonText>
                 <IonText color='primary' className='value'><b>{targetFlow} m<sup>3</sup>/s</b></IonText>
             </div>
             {isUpcomingTargetDateRange(targetDateRange) ? <div className='titleValueStacked'>

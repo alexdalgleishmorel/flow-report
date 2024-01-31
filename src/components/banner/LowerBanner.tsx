@@ -20,7 +20,7 @@ function LowerBanner({targetFlow, onTargetFlowChange}: LowerBannerProps) {
     return (
         <div className='bannerContainer'>
             <div className='titleValueStacked'>
-                <IonText color='medium' className='title'>ADJUST TARGET FLOW</IonText>
+                <IonText color='medium' className='title'>ADJUST MINIMUM FLOW</IonText>
                 <div className="rangeContainer">
                     <IonRange value={flowTarget} min={0} max={50} step={5} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                 </div>
