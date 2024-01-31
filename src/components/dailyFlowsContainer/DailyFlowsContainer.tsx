@@ -3,14 +3,14 @@ import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 
 import { FlowData } from "../../pages/Home";
 import DailyFlowsChart from "./dailyFlowChart/DailyFlowChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import './DailyFlowsContainer.css';
 
 export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
     if (flowData.length) {
-        const selectedDate = new Date(flowData[selectedIndex].day);
         return (
             <div className="content">
                 <div className="dateSelector">
@@ -21,7 +21,7 @@ export function DailyFlowsContainer({flowData}: { flowData: FlowData[] }) {
                         onClick={() => selectedIndex ? setSelectedIndex(selectedIndex-1) : setSelectedIndex(selectedIndex) }
                     >
                     </IonIcon>
-                    <IonText color='primary'>{selectedDate.toDateString()}</IonText>
+                    <IonText color='primary'>{flowData[selectedIndex].day.toDateString()}</IonText>
                     <IonIcon 
                         color={selectedIndex < flowData.length-1 ? '' : 'light'} 
                         icon={chevronForwardOutline} 

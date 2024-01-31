@@ -1,6 +1,15 @@
+.content {
+    width: 100%;
+    height: 90%;
+}
+
 .dateSelector {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
+}
+
+ion-icon:hover {
+    cursor: pointer;
 }

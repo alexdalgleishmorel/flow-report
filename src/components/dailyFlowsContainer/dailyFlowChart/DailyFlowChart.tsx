@@ -29,7 +29,7 @@ function BarChart({flowData}: { flowData: FlowData }) {
         labels: flowData.dataPoints.map(dataPoint => dataPoint.hour),
         datasets: [
             {
-                label: 'Flow Volume (cms)',
+                label: 'Flow',
                 data: flowData.dataPoints.map(dataPoint => dataPoint.volume),
                 backgroundColor: [
                 'rgba(54, 162, 235, 0.2)',
