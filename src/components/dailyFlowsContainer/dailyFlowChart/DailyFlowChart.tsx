@@ -1,4 +1,4 @@
-import { FlowData, FlowDataPoint } from "../../../pages/Home";
+import { FlowData, FlowDataPoint, isDarkModeEnabled } from "../../../pages/Home";
 
 import './DailyFlowChart.css';
 
@@ -38,6 +38,10 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
         return flowData.day.getTime() === today.getTime() && dataPoint.hour === currentHour;
     };
 
+    const isActiveFlow = (dataPoint: FlowDataPoint): boolean => {
+        return isCurrentTime(dataPoint) && dataPoint.volume >= targetFlow;
+    };
+
     const shouldGreyData = (dataPoint: FlowDataPoint): boolean => {
         return flowData.day < today || 
             (flowData.day.getTime() === today.getTime() && dataPoint.hour < currentHour) ||
@@ -51,22 +55,22 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
                 label: 'Flow',
                 data: flowData.dataPoints.map(dataPoint => dataPoint.volume),
                 backgroundColor: flowData.dataPoints.map(dataPoint => {
-                    if (isCurrentTime(dataPoint)) {
-                        return 'rgba(47, 223, 117, 0.2)';
+                    if (isActiveFlow(dataPoint)) {
+                        return getGreen('33');
                     }
                     if (shouldGreyData(dataPoint)) {
-                        return 'rgba(50, 50, 50, 0.2)';
+                        return getLightGrey('33');
                     }
-                    return 'rgba(54, 162, 235, 0.2)';
+                    return getBlue('33');
                 }),
                 borderColor: flowData.dataPoints.map(dataPoint => {
-                    if (isCurrentTime(dataPoint)) {
-                        return 'rgba(47, 223, 117, 1)';
+                    if (isActiveFlow(dataPoint)) {
+                        return getGreen('FF');
                     }
                     if (shouldGreyData(dataPoint)) {
-                        return 'rgba(50, 50, 50, 1)';
+                        return getLightGrey('FF');
                     }
-                    return 'rgba(54, 162, 235, 1)';
+                    return getBlue('FF');
                 }),
                 borderWidth: 1
             }
@@ -76,13 +80,19 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     const options = {
         scales: {
             x: {
+                grid: { display: false },
                 ticks: {
-                    color: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? '#2fdf75' : '#686A71'
+                    color: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? getBlue('FF') : getGrey('FF'),
+                    font: {
+                        size: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? 14 : 12,
+                        weight: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? 'bolder' as 'bolder' : 'normal' as 'normal',
+                    }
                 }
             },
             y: {
+                grid: { display: false },
                 ticks: {
-                    color: () => '#686A71'
+                    color: () => getGrey('FF')
                 }
             }
         },
@@ -108,6 +118,26 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
 
     return <Bar data={data} options={options} />;
 };
+
+function getBlue(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#428cff' : '#3880ff';
+    return color.concat(alphaHex);
+}
+
+function getGrey(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#989aa2' : '#92949c';
+    return color.concat(alphaHex);
+}
+
+function getLightGrey(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#383a3e' : '#d7d8da';
+    return color.concat(alphaHex);
+}
+
+function getGreen(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#2fdf75' : '#2dd36f';
+    return color.concat(alphaHex);
+}
 
 export function DailyFlowsChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     return <BarChart flowData={flowData} targetFlow={targetFlow} update={update}></BarChart>;

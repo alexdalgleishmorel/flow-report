@@ -21,5 +21,22 @@
 }
 
 .rangeContainer {
-    width: 50%;
+    width: 80%;
+}
+
+.toggleContainer {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .spacer {
+        padding: 4px;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 50%;
+    }
 }
