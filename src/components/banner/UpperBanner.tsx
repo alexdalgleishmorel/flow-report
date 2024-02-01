@@ -52,7 +52,7 @@ function UpperBanner({flowData, targetFlow, onCountdownComplete}: UpperBannerPro
                 countdownString += days ? `${days}d ` : '';
                 countdownString += hours ? `${hours}h ` : '';
                 countdownString += minutes ? `${minutes}m` : '';
-                countdownString += !days && !hours && !minutes ? `${seconds}s` : '';
+                countdownString += !days && !hours && !minutes && seconds ? `${seconds}s` : '';
                 setCountdown(countdownString);
             } else {
                 onCountdownComplete();
