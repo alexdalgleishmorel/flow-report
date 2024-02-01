@@ -74,6 +74,18 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     };
     
     const options = {
+        scales: {
+            x: {
+                ticks: {
+                    color: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? '#2fdf75' : '#686A71'
+                }
+            },
+            y: {
+                ticks: {
+                    color: () => '#686A71'
+                }
+            }
+        },
         plugins: {
             legend: { display: false },
             tooltip: {
