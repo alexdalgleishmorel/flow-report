@@ -10,9 +10,10 @@ import './DailyFlowsContainer.css';
 interface DailyFlowsContainerProps {
     flowData: FlowData[];
     targetFlow: number;
+    update: number;
 }
 
-export function DailyFlowsContainer({flowData, targetFlow}: DailyFlowsContainerProps) {
+export function DailyFlowsContainer({flowData, targetFlow, update}: DailyFlowsContainerProps) {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
     if (flowData.length) {
@@ -35,7 +36,7 @@ export function DailyFlowsContainer({flowData, targetFlow}: DailyFlowsContainerP
                     >
                     </IonIcon>
                 </div>
-                <DailyFlowsChart flowData={flowData[selectedIndex]} targetFlow={targetFlow}></DailyFlowsChart>
+                <DailyFlowsChart flowData={flowData[selectedIndex]} targetFlow={targetFlow} update={update}></DailyFlowsChart>
             </div>
         );
     }

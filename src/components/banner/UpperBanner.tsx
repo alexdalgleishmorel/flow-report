@@ -9,46 +9,54 @@ import { closeCircleOutline, waterOutline } from 'ionicons/icons';
 interface UpperBannerProps {
     flowData: FlowData[];
     targetFlow: number;
+    onCountdownComplete: () => void;
 }
 
-function UpperBanner({flowData, targetFlow}: UpperBannerProps) {
+function UpperBanner({flowData, targetFlow, onCountdownComplete}: UpperBannerProps) {
     const [targetDateRange, setTargetDateRange] = useState<Date[]>([]);
     const [countdown, setCountdown] = useState<string>('');
-    const [countdownCompleted, setCountdownCompleted] = useState(false);
+    const [countdownCompleted, setCountdownCompleted] = useState<number>(0);
 
     useEffect(() => {
-        setCountdownCompleted(false);
         setTargetDateRange([]);
         setTargetDateRange(calculateTargetDateRange(targetFlow, flowData));
-    }, [targetFlow, flowData, countdownCompleted]);
+    }, [targetFlow, flowData]);
+
+    useEffect(() => {
+        setTargetDateRange([]);
+        setTargetDateRange(calculateTargetDateRange(targetFlow, flowData));
+    }, [countdownCompleted]);
 
     useEffect(() => {
         setCountdown('');
+        const targetDate = isUpcomingTargetDateRange(targetDateRange) ? targetDateRange[0] : targetDateRange[1];
         const timer = setInterval(() => {
-            updateCountdown();
+            updateCountdown(targetDate);
         }, 1000);
 
         return () => clearInterval(timer);
     }, [targetDateRange]);
 
-    const updateCountdown = () => {
+    const updateCountdown = (targetDate: Date) => {
         if (targetDateRange.length == 2) {
             const now = new Date();
-            const targetDate = isUpcomingTargetDateRange(targetDateRange) ? targetDateRange[0] : targetDateRange[1];
             const difference = targetDate.getTime() - now.getTime();
 
             if (difference > 0) {
                 const days = Math.floor(difference / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
                 const minutes = Math.floor((difference / (1000 * 60)) % 60);
+                const seconds = Math.floor((difference / 1000) % 60);
                 
                 let countdownString = '';
                 countdownString += days ? `${days}d ` : '';
                 countdownString += hours ? `${hours}h ` : '';
                 countdownString += minutes ? `${minutes}m` : '';
+                countdownString += !days && !hours && !minutes ? `${seconds}s` : '';
                 setCountdown(countdownString);
             } else {
-                setCountdownCompleted(true);
+                onCountdownComplete();
+                setCountdownCompleted(countdownCompleted+1);
             }
         }
     };

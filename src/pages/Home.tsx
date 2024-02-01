@@ -10,7 +10,8 @@ const MOCK_DATA = {"name":"pv_hydro_river_flow_by_site","elements":[{"day":0,"en
 
 const Home: React.FC = () => {
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [targetFlow, setTargetFlow] = useState<number>(30);
+  const [targetFlow, setTargetFlow] = useState<number>(1);
+  const [update, setUpdate] = useState<number>(0);
 
   useEffect(() => {
     setFlowData(processFlowData(MOCK_DATA));
@@ -20,14 +21,18 @@ const Home: React.FC = () => {
     setTargetFlow(flow);
   }
 
+  const onCountdownComplete = () => {
+    setUpdate(update+1);
+  }
+
   if (flowData.length) {
     return (
       <IonPage>
-        <IonHeader><UpperBanner flowData={flowData} targetFlow={targetFlow} /></IonHeader>
+        <IonHeader><UpperBanner flowData={flowData} targetFlow={targetFlow} onCountdownComplete={onCountdownComplete} /></IonHeader>
         <IonContent fullscreen>
           <div className='spacer'></div>
           <div className='content'>
-            <DailyFlowsContainer flowData={flowData} targetFlow={targetFlow} />
+            <DailyFlowsContainer flowData={flowData} targetFlow={targetFlow} update={update} />
           </div>
         </IonContent>
         <IonFooter><LowerBanner targetFlow={targetFlow} onTargetFlowChange={onTargetFlowChange} /></IonFooter>

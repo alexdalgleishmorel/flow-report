@@ -26,15 +26,16 @@ import { Bar } from 'react-chartjs-2';
 interface DailyFlowsChartProps {
     flowData: FlowData;
     targetFlow: number;
+    update: number;
 }
 
-function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
+function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     let today = new Date();
     const currentHour = today.getHours();
     today.setHours(0, 0, 0, 0);
 
-    const isActiveFlow = (dataPoint: FlowDataPoint): boolean => {
-        return flowData.day.getTime() === today.getTime() && dataPoint.hour === currentHour && dataPoint.volume >= targetFlow;
+    const isCurrentTime = (dataPoint: FlowDataPoint): boolean => {
+        return flowData.day.getTime() === today.getTime() && dataPoint.hour === currentHour;
     };
 
     const shouldGreyData = (dataPoint: FlowDataPoint): boolean => {
@@ -50,7 +51,7 @@ function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
                 label: 'Flow',
                 data: flowData.dataPoints.map(dataPoint => dataPoint.volume),
                 backgroundColor: flowData.dataPoints.map(dataPoint => {
-                    if (isActiveFlow(dataPoint)) {
+                    if (isCurrentTime(dataPoint)) {
                         return 'rgba(47, 223, 117, 0.2)';
                     }
                     if (shouldGreyData(dataPoint)) {
@@ -59,7 +60,7 @@ function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
                     return 'rgba(54, 162, 235, 0.2)';
                 }),
                 borderColor: flowData.dataPoints.map(dataPoint => {
-                    if (isActiveFlow(dataPoint)) {
+                    if (isCurrentTime(dataPoint)) {
                         return 'rgba(47, 223, 117, 1)';
                     }
                     if (shouldGreyData(dataPoint)) {
@@ -96,8 +97,8 @@ function BarChart({flowData, targetFlow}: DailyFlowsChartProps) {
     return <Bar data={data} options={options} />;
 };
 
-export function DailyFlowsChart({flowData, targetFlow}: DailyFlowsChartProps) {
-    return <BarChart flowData={flowData} targetFlow={targetFlow}></BarChart>;
+export function DailyFlowsChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
+    return <BarChart flowData={flowData} targetFlow={targetFlow} update={update}></BarChart>;
 }
 
 export default DailyFlowsChart;
