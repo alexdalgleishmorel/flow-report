@@ -1,8 +1,3 @@
-.content {
-    width: 100%;
-    height: 90%;
-}
-
 .dateSelector {
     display: flex;
     flex-direction: row;

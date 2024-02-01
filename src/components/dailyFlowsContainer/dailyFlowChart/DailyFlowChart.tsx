@@ -78,6 +78,7 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     };
     
     const options = {
+        maintainAspectRatio: false,
         scales: {
             x: {
                 grid: { display: false },
@@ -97,6 +98,10 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
             }
         },
         plugins: {
+            title: {
+                display: true,
+                text: flowData.day.toDateString()
+            },
             legend: { display: false },
             tooltip: {
                 displayColors: false,

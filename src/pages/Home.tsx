@@ -10,8 +10,9 @@ const MOCK_DATA = {"name":"pv_hydro_river_flow_by_site","elements":[{"day":0,"en
 
 const Home: React.FC = () => {
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [targetFlow, setTargetFlow] = useState<number>(1);
+  const [targetFlow, setTargetFlow] = useState<number>(25);
   const [update, setUpdate] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   useEffect(() => {
     toggleDarkTheme(isDarkModeDefault());
@@ -30,17 +31,29 @@ const Home: React.FC = () => {
     setUpdate(update+1);
   }
 
+  const onSelectedIndexChange = (index: number) => {
+    setSelectedIndex(index);
+  }
+
   if (flowData.length) {
     return (
       <IonPage>
         <IonHeader><UpperBanner flowData={flowData} targetFlow={targetFlow} onCountdownComplete={onCountdownComplete} /></IonHeader>
-        <IonContent fullscreen>
-          <div className='spacer'></div>
+        <IonContent scrollY={false} fullscreen>
           <div className='content'>
-            <DailyFlowsContainer flowData={flowData} targetFlow={targetFlow} update={update} />
+            <DailyFlowsContainer flowData={flowData} targetFlow={targetFlow} update={update} selectedIndex={selectedIndex} />
           </div>
         </IonContent>
-        <IonFooter><LowerBanner targetFlow={targetFlow} onTargetFlowChange={onTargetFlowChange} onThemeChange={onThemeChange} /></IonFooter>
+        <IonFooter>
+          <LowerBanner
+            flowData={flowData}
+            selectedIndex={selectedIndex}
+            targetFlow={targetFlow}
+            onTargetFlowChange={onTargetFlowChange}
+            onThemeChange={onThemeChange}
+            onSelectedIndexChange={onSelectedIndexChange}
+          />
+        </IonFooter>
       </IonPage>
     );
   } else {
