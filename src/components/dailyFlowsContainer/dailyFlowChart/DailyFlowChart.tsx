@@ -1,28 +1,11 @@
-import { FlowData, FlowDataPoint, useData } from "../../../dataContext";
-import { isDarkModeEnabled } from "../../../pages/Home";
-
-import './DailyFlowChart.css';
-
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js';
-  
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
-
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+
+import { FlowDataPoint, useData } from "../../../dataContext";
+import { isDarkModeEnabled } from "../../../pages/Home";
+import './DailyFlowChart.css';
+  
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex } = useData();
@@ -50,7 +33,6 @@ export function DailyFlowsChart() {
         labels: data.dataPoints.map(dataPoint => dataPoint.hour),
         datasets: [
             {
-                label: 'Flow',
                 data: data.dataPoints.map(dataPoint => dataPoint.volume),
                 backgroundColor: data.dataPoints.map(dataPoint => {
                     if (isActiveFlow(dataPoint)) {

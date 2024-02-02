@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
 import { IonIcon, IonSpinner, IonText } from '@ionic/react';
+import { closeCircleOutline, waterOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
 
 import { FlowData, useData } from '../../dataContext';
-
 import './UpperBanner.css';
-import { closeCircleOutline, waterOutline } from 'ionicons/icons';
+
 
 function UpperBanner() {
     const { flowData, targetFlow } = useData();
@@ -100,7 +100,6 @@ function isIndefiniteTargetDateRange(dateRange: Date[]): boolean {
 
 function calculateTargetDateRange(targetFlow: number, flowData: FlowData[]): Date[] {
     let targetDateRange: Date[] = [];
-
     flowData.forEach(entry => {
         const day: Date = entry.day;
         entry.dataPoints.forEach(dataPoint => {
