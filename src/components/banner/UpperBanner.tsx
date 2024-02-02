@@ -47,8 +47,8 @@ function UpperBanner() {
                 let countdownString = '';
                 countdownString += days ? `${days}d ` : '';
                 countdownString += hours ? `${hours}h ` : '';
-                countdownString += minutes ? `${minutes}m` : '';
-                countdownString += !days && !hours && !minutes && seconds ? `${seconds}s` : '';
+                countdownString += minutes ? `${minutes}m ` : '';
+                countdownString += seconds && ((!days && !hours && !(minutes)) || (minutes <= 1)) ? `${seconds}s` : '';
                 setCountdown(countdownString);
             } else {
                 setCountdownCompleted(countdownCompleted+1);
