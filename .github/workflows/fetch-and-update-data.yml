@@ -1,0 +1,36 @@
+name: Fetch, Build, and Deploy
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  updateDataBuildAndDeploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '21'
+      
+      - name: Fetch data from TransAlta API
+        run: |
+          curl https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow > ./src/data.json
+      
+      - name: Commit and push if there are changes
+        run: |
+          git config --global user.email "alex.dalgleishmorel@gmail.com"
+          git config --global user.name "alexdalgleishmorel"
+          git add data.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update data" && git push)
+          
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Build and Deploy
+        run: npm run deploy
