@@ -36,4 +36,4 @@ A lower toolbar allows for adjustments to the minimum flow rate, updating visual
 5. **Data sourced from TransAlta's Forecasted Flow Rate API**
 
 ## Demo Video
-***Coming Soon***
+https://youtu.be/GBsQJYNHIeY
