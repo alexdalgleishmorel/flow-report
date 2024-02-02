@@ -29,12 +29,16 @@ jobs:
           git add ./src/data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update data" && git push)
         env:
-          GITHUB_TOKEN: ${{ secrets.FLOW_REPORT_TOKEN_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Install Dependencies
         run: npm install
       
       - name: Build and Deploy
-        run: npm run deploy
+        run: |
+          git config --global user.email "alex.dalgleishmorel@gmail.com"
+          git config --global user.name "alexdalgleishmorel"
+          git remote set-url origin https://alexdalgleishmorel:${{ secrets.GITHUB_TOKEN }}@github.com/alexdalgleishmorel/flow-report.git
+          npm run deploy
         env:
-          GITHUB_TOKEN: ${{ secrets.FLOW_REPORT_TOKEN_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
