@@ -21,13 +21,17 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { DataProvider } from './dataContext';
+
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <Home />
+        <DataProvider>
+          <Home />
+        </DataProvider>
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>

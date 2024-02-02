@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
 import { IonIcon, IonSpinner, IonText } from '@ionic/react';
 
-import { FlowData } from '../../pages/Home';
+import { FlowData, useData } from '../../dataContext';
 
 import './UpperBanner.css';
 import { closeCircleOutline, waterOutline } from 'ionicons/icons';
 
-interface UpperBannerProps {
-    flowData: FlowData[];
-    targetFlow: number;
-    onCountdownComplete: () => void;
-}
+function UpperBanner() {
+    const { flowData, targetFlow } = useData();
 
-function UpperBanner({flowData, targetFlow, onCountdownComplete}: UpperBannerProps) {
     const [targetDateRange, setTargetDateRange] = useState<Date[]>([]);
     const [countdown, setCountdown] = useState<string>('');
     const [countdownCompleted, setCountdownCompleted] = useState<number>(0);
@@ -55,7 +51,6 @@ function UpperBanner({flowData, targetFlow, onCountdownComplete}: UpperBannerPro
                 countdownString += !days && !hours && !minutes && seconds ? `${seconds}s` : '';
                 setCountdown(countdownString);
             } else {
-                onCountdownComplete();
                 setCountdownCompleted(countdownCompleted+1);
             }
         }

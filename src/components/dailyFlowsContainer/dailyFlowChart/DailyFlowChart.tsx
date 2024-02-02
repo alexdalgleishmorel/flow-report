@@ -1,4 +1,5 @@
-import { FlowData, FlowDataPoint, isDarkModeEnabled } from "../../../pages/Home";
+import { FlowData, FlowDataPoint, useData } from "../../../dataContext";
+import { isDarkModeEnabled } from "../../../pages/Home";
 
 import './DailyFlowChart.css';
 
@@ -23,19 +24,16 @@ ChartJS.register(
 
 import { Bar } from 'react-chartjs-2';
 
-interface DailyFlowsChartProps {
-    flowData: FlowData;
-    targetFlow: number;
-    update: number;
-}
+export function DailyFlowsChart() {
+    const { flowData, targetFlow, selectedIndex } = useData();
+    const data = flowData[selectedIndex];
 
-function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     let today = new Date();
     const currentHour = today.getHours();
     today.setHours(0, 0, 0, 0);
 
     const isCurrentTime = (dataPoint: FlowDataPoint): boolean => {
-        return flowData.day.getTime() === today.getTime() && dataPoint.hour === currentHour;
+        return data.day.getTime() === today.getTime() && dataPoint.hour === currentHour;
     };
 
     const isActiveFlow = (dataPoint: FlowDataPoint): boolean => {
@@ -43,18 +41,18 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
     };
 
     const shouldGreyData = (dataPoint: FlowDataPoint): boolean => {
-        return flowData.day < today || 
-            (flowData.day.getTime() === today.getTime() && dataPoint.hour < currentHour) ||
+        return data.day < today || 
+            (data.day.getTime() === today.getTime() && dataPoint.hour < currentHour) ||
             dataPoint.volume < targetFlow;
     }
 
-    const data = {
-        labels: flowData.dataPoints.map(dataPoint => dataPoint.hour),
+    const chartData = {
+        labels: data.dataPoints.map(dataPoint => dataPoint.hour),
         datasets: [
             {
                 label: 'Flow',
-                data: flowData.dataPoints.map(dataPoint => dataPoint.volume),
-                backgroundColor: flowData.dataPoints.map(dataPoint => {
+                data: data.dataPoints.map(dataPoint => dataPoint.volume),
+                backgroundColor: data.dataPoints.map(dataPoint => {
                     if (isActiveFlow(dataPoint)) {
                         return getGreen('33');
                     }
@@ -63,7 +61,7 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
                     }
                     return getBlue('33');
                 }),
-                borderColor: flowData.dataPoints.map(dataPoint => {
+                borderColor: data.dataPoints.map(dataPoint => {
                     if (isActiveFlow(dataPoint)) {
                         return getGreen('FF');
                     }
@@ -100,7 +98,7 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
         plugins: {
             title: {
                 display: true,
-                text: flowData.day.toDateString()
+                text: data.day.toDateString()
             },
             legend: { display: false },
             tooltip: {
@@ -121,7 +119,7 @@ function BarChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
         }
     };
 
-    return <Bar data={data} options={options} />;
+    return <Bar data={chartData} options={options} />;
 };
 
 function getBlue(alphaHex: string) {
@@ -142,10 +140,6 @@ function getLightGrey(alphaHex: string) {
 function getGreen(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#2fdf75' : '#2dd36f';
     return color.concat(alphaHex);
-}
-
-export function DailyFlowsChart({flowData, targetFlow, update}: DailyFlowsChartProps) {
-    return <BarChart flowData={flowData} targetFlow={targetFlow} update={update}></BarChart>;
 }
 
 export default DailyFlowsChart;

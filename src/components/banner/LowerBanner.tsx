@@ -2,31 +2,28 @@ import { IonText, IonRange, IonToggle, IonIcon } from "@ionic/react";
 
 import './LowerBanner.css';
 import { useState } from "react";
-import { FlowData, isDarkModeEnabled, toggleDarkTheme } from "../../pages/Home";
+import { isDarkModeEnabled, toggleDarkTheme } from "../../pages/Home";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 
-interface LowerBannerProps {
-    flowData: FlowData[];
-    selectedIndex: number;
-    targetFlow: number;
-    onTargetFlowChange: (targetFlow: number) => void;
-    onThemeChange: () => void;
-    onSelectedIndexChange: (index: number) => void;
-}
+import { useData } from "../../dataContext";
 
-function LowerBanner({flowData, selectedIndex, targetFlow, onTargetFlowChange, onThemeChange, onSelectedIndexChange}: LowerBannerProps) {
+function LowerBanner() {
+    const { flowData, targetFlow, selectedIndex, themeChange, setTargetFlow, setSelectedIndex, setThemeChange } = useData();
     const [flowTarget, setFlowTarget] = useState<number>(targetFlow);
+
     const handleSliderChange = (value: number) => {
         value = !value ? 1 : value;
         if (value !== flowTarget) {
             setFlowTarget(value);
-            onTargetFlowChange(value);
+            setTargetFlow(value);
         }
     };
+
     const handleThemeChange = (value: boolean) => {
         toggleDarkTheme(value);
-        onThemeChange();
+        setThemeChange(themeChange+1);
     };
+
     return (
         <div className='bannerContainer'>
             <div className="toggleContainer">
@@ -47,7 +44,7 @@ function LowerBanner({flowData, selectedIndex, targetFlow, onTargetFlowChange, o
                         color={!selectedIndex ? 'light' : 'primary'}
                         icon={chevronBackOutline} 
                         size="large"
-                        onClick={() => selectedIndex ? onSelectedIndexChange(selectedIndex-1) : onSelectedIndexChange(selectedIndex) }
+                        onClick={() => selectedIndex ? setSelectedIndex(selectedIndex-1) : setSelectedIndex(selectedIndex) }
                     >
                     </IonIcon>
                     <div className="spacer"></div>
@@ -55,7 +52,7 @@ function LowerBanner({flowData, selectedIndex, targetFlow, onTargetFlowChange, o
                         color={!(selectedIndex < flowData.length-1) ? 'light' : 'primary'}
                         icon={chevronForwardOutline} 
                         size="large"
-                        onClick={() => selectedIndex < flowData.length-1 ? onSelectedIndexChange(selectedIndex+1) : onSelectedIndexChange(selectedIndex) }
+                        onClick={() => selectedIndex < flowData.length-1 ? setSelectedIndex(selectedIndex+1) : setSelectedIndex(selectedIndex) }
                     >
                     </IonIcon>
                 </div>
