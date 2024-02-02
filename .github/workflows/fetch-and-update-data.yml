@@ -26,7 +26,7 @@ jobs:
         run: |
           git config --global user.email "alex.dalgleishmorel@gmail.com"
           git config --global user.name "alexdalgleishmorel"
-          git add data.json
+          git add ./src/data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update data" && git push)
           
       - name: Install Dependencies
