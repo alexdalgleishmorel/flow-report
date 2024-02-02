@@ -28,9 +28,13 @@ jobs:
           git config --global user.name "alexdalgleishmorel"
           git add ./src/data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update data" && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.FLOW_REPORT_TOKEN_SECRET }}
           
       - name: Install Dependencies
         run: npm install
       
       - name: Build and Deploy
         run: npm run deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.FLOW_REPORT_TOKEN_SECRET }}
