@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 const MOCK_DATA = {"name":"pv_hydro_river_flow_by_site","elements":[{"day":0,"entry":[{"period":"2024-01-31 01","barrier":1,"pocaterra":1},{"period":"2024-01-31 02","barrier":1,"pocaterra":1},{"period":"2024-01-31 03","barrier":1,"pocaterra":1},{"period":"2024-01-31 04","barrier":1,"pocaterra":1},{"period":"2024-01-31 05","barrier":1,"pocaterra":1},{"period":"2024-01-31 06","barrier":1,"pocaterra":1},{"period":"2024-01-31 07","barrier":11,"pocaterra":1},{"period":"2024-01-31 08","barrier":29,"pocaterra":1},{"period":"2024-01-31 09","barrier":10,"pocaterra":1},{"period":"2024-01-31 10","barrier":10,"pocaterra":1},{"period":"2024-01-31 11","barrier":10,"pocaterra":1},{"period":"2024-01-31 12","barrier":10,"pocaterra":1},{"period":"2024-01-31 13","barrier":0,"pocaterra":1},{"period":"2024-01-31 14","barrier":3,"pocaterra":1},{"period":"2024-01-31 15","barrier":0,"pocaterra":1},{"period":"2024-01-31 16","barrier":0,"pocaterra":1},{"period":"2024-01-31 17","barrier":10,"pocaterra":17},{"period":"2024-01-31 18","barrier":10,"pocaterra":17},{"period":"2024-01-31 19","barrier":10,"pocaterra":17},{"period":"2024-01-31 20","barrier":10,"pocaterra":1},{"period":"2024-01-31 21","barrier":10,"pocaterra":1},{"period":"2024-01-31 22","barrier":10,"pocaterra":1},{"period":"2024-01-31 23","barrier":0,"pocaterra":1},{"period":"2024-01-31 24","barrier":0,"pocaterra":1}]},{"day":1,"entry":[{"period":"2024-02-01 01","barrier":0,"pocaterra":1},{"period":"2024-02-01 02","barrier":0,"pocaterra":1},{"period":"2024-02-01 03","barrier":0,"pocaterra":1},{"period":"2024-02-01 04","barrier":0,"pocaterra":1},{"period":"2024-02-01 05","barrier":0,"pocaterra":1},{"period":"2024-02-01 06","barrier":10,"pocaterra":1},{"period":"2024-02-01 07","barrier":10,"pocaterra":1},{"period":"2024-02-01 08","barrier":10,"pocaterra":1},{"period":"2024-02-01 09","barrier":10,"pocaterra":1},{"period":"2024-02-01 10","barrier":10,"pocaterra":1},{"period":"2024-02-01 11","barrier":0,"pocaterra":1},{"period":"2024-02-01 12","barrier":0,"pocaterra":1},{"period":"2024-02-01 13","barrier":0,"pocaterra":1},{"period":"2024-02-01 14","barrier":10,"pocaterra":1},{"period":"2024-02-01 15","barrier":10,"pocaterra":1},{"period":"2024-02-01 16","barrier":10,"pocaterra":1},{"period":"2024-02-01 17","barrier":10,"pocaterra":17},{"period":"2024-02-01 18","barrier":10,"pocaterra":17},{"period":"2024-02-01 19","barrier":10,"pocaterra":17},{"period":"2024-02-01 20","barrier":10,"pocaterra":1},{"period":"2024-02-01 21","barrier":10,"pocaterra":1},{"period":"2024-02-01 22","barrier":0,"pocaterra":1},{"period":"2024-02-01 23","barrier":0,"pocaterra":1},{"period":"2024-02-01 24","barrier":0,"pocaterra":1}]},{"day":2,"entry":[{"period":"2024-02-02 01","barrier":0,"pocaterra":1},{"period":"2024-02-02 02","barrier":0,"pocaterra":1},{"period":"2024-02-02 03","barrier":0,"pocaterra":1},{"period":"2024-02-02 04","barrier":0,"pocaterra":1},{"period":"2024-02-02 05","barrier":0,"pocaterra":1},{"period":"2024-02-02 06","barrier":10,"pocaterra":1},{"period":"2024-02-02 07","barrier":10,"pocaterra":1},{"period":"2024-02-02 08","barrier":10,"pocaterra":1},{"period":"2024-02-02 09","barrier":10,"pocaterra":1},{"period":"2024-02-02 10","barrier":10,"pocaterra":1},{"period":"2024-02-02 11","barrier":0,"pocaterra":1},{"period":"2024-02-02 12","barrier":0,"pocaterra":1},{"period":"2024-02-02 13","barrier":0,"pocaterra":1},{"period":"2024-02-02 14","barrier":0,"pocaterra":1},{"period":"2024-02-02 15","barrier":10,"pocaterra":1},{"period":"2024-02-02 16","barrier":10,"pocaterra":1},{"period":"2024-02-02 17","barrier":10,"pocaterra":17},{"period":"2024-02-02 18","barrier":10,"pocaterra":17},{"period":"2024-02-02 19","barrier":10,"pocaterra":17},{"period":"2024-02-02 20","barrier":10,"pocaterra":1},{"period":"2024-02-02 21","barrier":10,"pocaterra":1},{"period":"2024-02-02 22","barrier":0,"pocaterra":1},{"period":"2024-02-02 23","barrier":0,"pocaterra":1},{"period":"2024-02-02 24","barrier":0,"pocaterra":1}]},{"day":3,"entry":[{"period":"2024-02-03 01","barrier":30,"pocaterra":1},{"period":"2024-02-03 02","barrier":0,"pocaterra":1},{"period":"2024-02-03 03","barrier":0,"pocaterra":1},{"period":"2024-02-03 04","barrier":0,"pocaterra":1},{"period":"2024-02-03 05","barrier":0,"pocaterra":1},{"period":"2024-02-03 06","barrier":10,"pocaterra":1},{"period":"2024-02-03 07","barrier":10,"pocaterra":1},{"period":"2024-02-03 08","barrier":10,"pocaterra":1},{"period":"2024-02-03 09","barrier":10,"pocaterra":1},{"period":"2024-02-03 10","barrier":10,"pocaterra":1},{"period":"2024-02-03 11","barrier":0,"pocaterra":1},{"period":"2024-02-03 12","barrier":0,"pocaterra":1},{"period":"2024-02-03 13","barrier":0,"pocaterra":1},{"period":"2024-02-03 14","barrier":0,"pocaterra":1},{"period":"2024-02-03 15","barrier":10,"pocaterra":1},{"period":"2024-02-03 16","barrier":10,"pocaterra":1},{"period":"2024-02-03 17","barrier":10,"pocaterra":17},{"period":"2024-02-03 18","barrier":10,"pocaterra":17},{"period":"2024-02-03 19","barrier":10,"pocaterra":17},{"period":"2024-02-03 20","barrier":10,"pocaterra":1},{"period":"2024-02-03 21","barrier":10,"pocaterra":1},{"period":"2024-02-03 22","barrier":0,"pocaterra":1},{"period":"2024-02-03 23","barrier":0,"pocaterra":1},{"period":"2024-02-03 24","barrier":0,"pocaterra":1}]}],"links":[{"rel":"self","href":"http://denodo.transalta.org:9090/server/hydro/hydro_river_flow/views/pv_hydro_river_flow_by_site?%24format=json"}]}
 
@@ -8,8 +8,8 @@ interface DataContextType {
   setTargetFlow: (targetFlow: number) => void;
   selectedIndex: number;
   setSelectedIndex: (index: number) => void;
-  themeChange: number;
-  setThemeChange: (increment: number) => void;
+  stateUpdate: number;
+  setStateUpdate: (state: number) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
@@ -20,10 +20,29 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [flowData] = useState<FlowData[]>(FLOW_DATA);
   const [targetFlow, setTargetFlow] = useState<number>(25);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [themeChange, setThemeChange] = useState<number>(0);
+  const [stateUpdate, setStateUpdate] = useState<number>(0);
+
+  useEffect(() => {
+    const updateOnHour = () => {
+      setStateUpdate(state => state + 1);
+    };
+
+    const now = new Date();
+    const nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 0, 0);
+    const delayUntilNextHour = nextHour.getTime() - now.getTime();
+
+    const timeoutId = setTimeout(() => {
+      updateOnHour();
+      setInterval(updateOnHour, 1000 * 60 * 60);
+    }, delayUntilNextHour);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, themeChange, setThemeChange }}>
+    <FlowDataContext.Provider value={{ flowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate }}>
       {children}
     </FlowDataContext.Provider>
   );

@@ -7,7 +7,7 @@ import './LowerBanner.css';
 
 
 function LowerBanner() {
-    const { flowData, targetFlow, selectedIndex, themeChange, setTargetFlow, setSelectedIndex, setThemeChange } = useData();
+    const { flowData, targetFlow, selectedIndex, stateUpdate, setTargetFlow, setSelectedIndex, setStateUpdate } = useData();
 
     const handleSliderChange = (value: number) => {
         value = !value ? 1 : value;
@@ -18,7 +18,7 @@ function LowerBanner() {
 
     const handleThemeChange = (value: boolean) => {
         toggleDarkTheme(value);
-        setThemeChange(themeChange+1);
+        setStateUpdate(stateUpdate+1);
     };
 
     return (
