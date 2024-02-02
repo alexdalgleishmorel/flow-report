@@ -1,5 +1,5 @@
 import { IonIcon, IonSpinner, IonText } from '@ionic/react';
-import { closeCircleOutline, waterOutline } from 'ionicons/icons';
+import { closeCircleOutline, infiniteOutline, waterOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 
 import { FlowData, useData } from '../../dataContext';
@@ -77,6 +77,10 @@ function UpperBanner() {
             {isInsideTargetDateRange(targetDateRange) ? <div className='titleValueStacked'>
                 <IonText color='medium' className='title'>ENDS IN</IonText>
                 {countdown ? <IonText color='primary' className='value'><b>{countdown}</b></IonText> : <IonSpinner color='primary' name='dots'></IonSpinner>}
+            </div> : null}
+            {isIndefiniteTargetDateRange(targetDateRange) ? <div className='titleValueStacked'>
+                <IonText color='medium' className='title'>CONTINUOUS FLOW</IonText>
+                <IonIcon color='primary' icon={infiniteOutline} size="large"></IonIcon>
             </div> : null}
             {!targetDateRange.length ? <div className='titleValueStacked'>
                 <IonText color='medium' className='title'>NO FORECAST</IonText>
