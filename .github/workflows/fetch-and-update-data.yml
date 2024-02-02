@@ -24,6 +24,8 @@ jobs:
       
       - name: Commit and push if there are changes
         run: |
+          git config --global user.email "alex.dalgleishmorel@gmail.com"
+          git config --global user.name "alexdalgleishmorel"
           git add ./src/data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update data")
           git -c http.extraheader="AUTHORIZATION: bearer ${{ secrets.FLOW_REPORT_TOKEN_SECRET }}" push origin main
