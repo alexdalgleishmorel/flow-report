@@ -18,15 +18,16 @@ jobs:
         with:
           node-version: '21'
       
-      - name: Fetch data from TransAlta API
+      - name: Fetch data from TransAlta API and Weather API
         run: |
-          curl https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow > ./src/data.json
+          curl https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow > ./src/flowData.json
+          curl https://api.open-meteo.com/v1/forecast?latitude=51.051798892149094&longitude=-115.0190595210664&hourly=temperature_2m&daily=sunrise,sunset&timezone=America%2FDenver > ./src/weatherData.json
       
       - name: Commit and push if there are changes
         run: |
           git config --global user.email "alex.dalgleishmorel@gmail.com"
           git config --global user.name "alexdalgleishmorel"
-          git add ./src/data.json
+          git add ./src/flowData.json ./src/weatherData.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update data" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
