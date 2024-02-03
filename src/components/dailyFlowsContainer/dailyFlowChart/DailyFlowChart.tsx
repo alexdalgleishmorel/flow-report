@@ -56,6 +56,23 @@ export function DailyFlowsChart() {
             }
         ]
     };
+
+    const getTicketColor = (index: number): string => {
+        if (isCurrentTime({ hour: index, volume: 0 })) {
+            return getBlue('FF');
+        }
+        if (index === data.sunriseHour) {
+            return getOrange('FF');
+        }
+        if (index === data.sunsetHour) {
+            return getOrange('FF');
+        }
+        return getGrey('FF');
+    };
+
+    const shouldBold = (index: number): boolean => {
+        return isCurrentTime({ hour: index, volume: 0 }) || index === data.sunriseHour || index === data.sunsetHour;
+    }
     
     const options = {
         maintainAspectRatio: false,
@@ -63,12 +80,15 @@ export function DailyFlowsChart() {
             x: {
                 grid: { display: false },
                 ticks: {
-                    color: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? getBlue('FF') : getGrey('FF'),
+                    color: (data: any) => getTicketColor(data.index),
                     font: {
-                        size: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? 14 : 12,
-                        weight: (data: any) => isCurrentTime({ hour: data.index, volume: 0 }) ? 'bolder' as 'bolder' : 'normal' as 'normal',
-                    }
-                }
+                        size: (data: any) => shouldBold(data.index) ? 12 : 8,
+                        weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
+                    },
+                    autoSkip: false,
+                    minRotation: 0,
+                    maxRotation: 0
+                },
             },
             y: {
                 grid: { display: false },
@@ -95,7 +115,13 @@ export function DailyFlowsChart() {
 
                         return from.concat(' - ').concat(to);
                     },
-                    label: (data: any) => ''.concat(data.raw).concat(' m³/s')
+                    label: (labelData: any) => {
+                        const temperature = data.dataPoints[labelData.dataIndex].temperature;
+                        if (temperature) {
+                            return ''.concat(labelData.raw).concat(' m³/s ').concat('| ').concat(temperature.toString()).concat(' °C');
+                        }
+                        return ''.concat(labelData.raw).concat(' m³/s ');
+                    }
                 }
             }
         }
@@ -121,6 +147,11 @@ function getLightGrey(alphaHex: string) {
 
 function getGreen(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#2fdf75' : '#2dd36f';
+    return color.concat(alphaHex);
+}
+
+function getOrange(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#FF8C00' : '#FF8C00';
     return color.concat(alphaHex);
 }
 
