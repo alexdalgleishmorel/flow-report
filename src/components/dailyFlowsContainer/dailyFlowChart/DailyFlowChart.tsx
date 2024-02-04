@@ -58,14 +58,14 @@ export function DailyFlowsChart() {
     };
 
     const getTicketColor = (index: number): string => {
-        if (isCurrentTime({ hour: index, volume: 0 })) {
-            return getBlue('FF');
-        }
         if (index === data.sunriseHour) {
             return getOrange('FF');
         }
         if (index === data.sunsetHour) {
             return getOrange('FF');
+        }
+        if (isCurrentTime({ hour: index, volume: 0 })) {
+            return getBlue('FF');
         }
         return getGrey('FF');
     };
