@@ -57,7 +57,7 @@ export function DailyFlowsChart() {
         ]
     };
 
-    const getTicketColor = (index: number): string => {
+    const getTickerColor = (index: number): string => {
         if (index === data.sunriseHour) {
             return getOrange('FF');
         }
@@ -80,7 +80,7 @@ export function DailyFlowsChart() {
             x: {
                 grid: { display: false },
                 ticks: {
-                    color: (data: any) => getTicketColor(data.index),
+                    color: (data: any) => getTickerColor(data.index),
                     font: {
                         size: (data: any) => shouldBold(data.index) ? 12 : 8,
                         weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
@@ -100,7 +100,8 @@ export function DailyFlowsChart() {
         plugins: {
             title: {
                 display: true,
-                text: data.day.toDateString()
+                text: data.day.toDateString(),
+                font: { size: 18 }
             },
             legend: { display: false },
             tooltip: {

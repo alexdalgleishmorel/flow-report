@@ -104,13 +104,15 @@ function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
     let now = new Date();
     now.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
+    const sunriseHour: number | undefined = sunriseHours.shift();
+    const sunsetHour: number | undefined = sunsetHours.shift();
     if (date >= now) {
       flowData.push({
         day: date, 
         dataPoints: dataPoints, 
-        sunriseHour: sunriseHours.shift(), 
-        sunsetHour: sunsetHours.shift() }
-      );
+        sunriseHour: sunriseHour, 
+        sunsetHour: sunsetHour 
+      });
     }
   });
   return flowData;
