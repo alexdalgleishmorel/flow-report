@@ -1,11 +1,11 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 import { FlowDataPoint, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
   
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex } = useData();
