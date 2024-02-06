@@ -103,11 +103,25 @@ export function DailyFlowsChart() {
                 },
             },
             temperature: {
+                position: 'right' as 'right',
+                title: {
+                    display: true,
+                    text: 'Temperature'
+                },
                 grid: { display: false },
-                display: false
+                display: true,
+                ticks: {
+                    color: () => getGrey('FF')
+                }
             },
             volume: {
+                position: 'left' as 'left',
+                title: {
+                    display: true,
+                    text: 'Volume'
+                },
                 grid: { display: false },
+                display: true,
                 ticks: {
                     color: () => getGrey('FF')
                 }
