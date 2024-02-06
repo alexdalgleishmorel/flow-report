@@ -116,7 +116,8 @@ export function DailyFlowsChart() {
         plugins: {
             title: {
                 display: true,
-                text: data.day.toDateString()
+                text: data.day.toDateString(),
+                font: { size: 18 }
             },
             legend: { 
                 display: true,
