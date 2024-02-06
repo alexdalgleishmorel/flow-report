@@ -1,11 +1,11 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 import { FlowDataPoint, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
   
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex } = useData();
@@ -33,26 +33,38 @@ export function DailyFlowsChart() {
         labels: data.dataPoints.map(dataPoint => dataPoint.hour),
         datasets: [
             {
-                data: data.dataPoints.map(dataPoint => dataPoint.volume),
-                backgroundColor: data.dataPoints.map(dataPoint => {
-                    if (isActiveFlow(dataPoint)) {
-                        return getGreen('33');
-                    }
+                type: 'line' as any,
+                label: 'Temperature',
+                data: data.dataPoints.map(dataPoint => dataPoint.temperature),
+                borderColor: data.dataPoints.map(dataPoint => {
                     if (shouldGreyData(dataPoint)) {
                         return getLightGrey('33');
                     }
-                    return getBlue('33');
+                    return getDarkColor('FF');
                 }),
-                borderColor: data.dataPoints.map(dataPoint => {
+                backgroundColor: data.dataPoints.map(dataPoint => {
+                    if (shouldGreyData(dataPoint)) {
+                        return getLightGrey('FF');
+                    }
+                    return getDarkColor('FF');
+                }),
+                yAxisID: 'temperature',
+                order: 0
+            },
+            {
+                label: 'Volume',
+                data: data.dataPoints.map(dataPoint => dataPoint.volume),
+                backgroundColor: data.dataPoints.map(dataPoint => {
                     if (isActiveFlow(dataPoint)) {
                         return getGreen('FF');
                     }
                     if (shouldGreyData(dataPoint)) {
-                        return getLightGrey('FF');
+                        return getLightGrey('33');
                     }
                     return getBlue('FF');
                 }),
-                borderWidth: 1
+                yAxisID: 'volume',
+                order: 1
             }
         ]
     };
@@ -90,7 +102,11 @@ export function DailyFlowsChart() {
                     maxRotation: 0
                 },
             },
-            y: {
+            temperature: {
+                grid: { display: false },
+                display: false
+            },
+            volume: {
                 grid: { display: false },
                 ticks: {
                     color: () => getGrey('FF')
@@ -103,7 +119,30 @@ export function DailyFlowsChart() {
                 text: data.day.toDateString(),
                 font: { size: 18 }
             },
-            legend: { display: false },
+            legend: { 
+                display: true,
+                labels: {
+                    usePointStyle: true,
+                    generateLabels(): LegendItem[] {
+                        return [
+                            {
+                                text: 'Temperature',
+                                datasetIndex: 0,
+                                fillStyle: getDarkColor('FF'),
+                                fontColor: getGrey('FF'),
+                                pointStyle: 'circle'
+                            },
+                            {
+                                text: 'Volume',
+                                datasetIndex: 1,
+                                fillStyle: getBlue('FF'),
+                                fontColor: getGrey('FF'),
+                                pointStyle: 'rect'
+                            }
+                        ];
+                    }
+                }
+            },
             tooltip: {
                 displayColors: false,
                 callbacks: {
@@ -117,11 +156,12 @@ export function DailyFlowsChart() {
                         return from.concat(' - ').concat(to);
                     },
                     label: (labelData: any) => {
-                        const temperature = data.dataPoints[labelData.dataIndex].temperature;
-                        if (temperature) {
-                            return ''.concat(labelData.raw).concat(' m³/s ').concat('| ').concat(temperature.toString()).concat(' °C');
+                        const yAxisID = labelData.dataset.yAxisID;
+                        const temperature = data.dataPoints[labelData.dataIndex].temperature || 0;
+                        if (yAxisID === 'volume') {
+                            return 'Volume: '.concat(labelData.raw).concat(' m³/s');
                         }
-                        return ''.concat(labelData.raw).concat(' m³/s ');
+                        return 'Temperature: '.concat(temperature.toString()).concat('°C');
                     }
                 }
             }
@@ -133,6 +173,11 @@ export function DailyFlowsChart() {
 
 function getBlue(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#428cff' : '#3880ff';
+    return color.concat(alphaHex);
+}
+
+function getDarkColor(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#f4f5f8' : '#222428';
     return color.concat(alphaHex);
 }
 
