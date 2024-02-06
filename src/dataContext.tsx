@@ -55,7 +55,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [flowData]);
 
   return (
     <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate }}>
