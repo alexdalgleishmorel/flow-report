@@ -94,7 +94,7 @@ export function DailyFlowsChart() {
                 ticks: {
                     color: (data: any) => getTickerColor(data.index),
                     font: {
-                        size: (data: any) => shouldBold(data.index) ? 12 : 8,
+                        size: (data: any) => shouldBold(data.index) ? 12 : (window.innerWidth < 450 ? 6 : 8),
                         weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
                     },
                     autoSkip: false,
