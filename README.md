@@ -24,7 +24,7 @@ An upper toolbar indicates whether the current flow rate is adequate for surfing
 #### 4. **Interactive Data Visualization**
 Color-coded graphs help users visually distinguish between optimal and suboptimal surfing days.
 #### 5. **Automatic Data Refresh**
-A GitHub workflow automatically refreshes the data every 24 hours, ensuring the latest flow rate forecasts.
+A GitHub workflow automatically refreshes the flow and weather data every 24 hours, ensuring the latest flow rate and weather forecasts.
 #### 6. **Customizable User Settings**
 A lower toolbar allows for adjustments to the minimum flow rate, updating visual indicators and forecast information.
 
@@ -33,7 +33,8 @@ A lower toolbar allows for adjustments to the minimum flow rate, updating visual
 2. **[React V18](https://react.dev/)**
 3. **[Ionic Framework](https://ionicframework.com/)**
 4. **GitHub Actions for Automatic Data Refresh**
-5. **Data sourced from TransAlta's Forecasted Flow Rate API**
+5. **Flow data sourced from TransAlta's Forecasted Flow Rate API**
+6. **Weather data sourced from [Open-Meteo Weather API](https://open-meteo.com/)**
 
 ## Demo Video
-https://youtu.be/GBsQJYNHIeY
+https://youtu.be/1zs52CFQ0kw
