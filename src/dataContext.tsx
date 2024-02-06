@@ -37,7 +37,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       const dayChanged = currentDayOfMonth !== lastHourDayOfMonth;
 
       if (dayChanged) {
-        selectedIndex < flowData.length-1 ? setSelectedIndex(selectedIndex+1) : setFlowData([]);
+        window.location.reload();
       }
 
       setStateUpdate(state => state + 1);
