@@ -140,7 +140,7 @@ export function DailyFlowsChart() {
                             {
                                 text: 'Temperature',
                                 datasetIndex: 0,
-                                fillStyle: getLightGrey('FF'),
+                                fillStyle: getDarkColor('AA'),
                                 fontColor: getGrey('FF'),
                                 pointStyle: 'circle'
                             }
