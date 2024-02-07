@@ -24,8 +24,16 @@ import './theme/variables.css';
 import { DataProvider } from './dataContext';
 
 const WINDOW_HEIGHT_LIMIT = 400;
+const WINDOW_WIDTH_LIMIT = 450;
+
 export function isNarrowLandscape(): boolean {
   return window.innerHeight <= WINDOW_HEIGHT_LIMIT && window.matchMedia("(orientation: landscape)").matches;
+}
+export function isNarrowWidth(): boolean {
+  return window.innerWidth < WINDOW_WIDTH_LIMIT;
+}
+export function isExtremeNarrowWidth(): boolean {
+  return window.innerWidth < (WINDOW_WIDTH_LIMIT-100);
 }
 
 setupIonicReact();
