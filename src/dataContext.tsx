@@ -64,10 +64,13 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
     const debouncedHandleResize = debounce(handleResize, 250);
 
+    const mediaOrientationListener = window.matchMedia("(orientation: portrait)");
+    mediaOrientationListener.addEventListener('change', debouncedHandleResize);
     window.addEventListener('orientationchange', debouncedHandleResize);
     window.addEventListener('resize', debouncedHandleResize);
 
     return () => {
+      mediaOrientationListener.removeEventListener('change', debouncedHandleResize);
       window.removeEventListener('orientationchange', debouncedHandleResize);
       window.removeEventListener('resize', debouncedHandleResize);
     };
