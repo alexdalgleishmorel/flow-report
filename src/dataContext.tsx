@@ -64,9 +64,13 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
     const debouncedHandleResize = debounce(handleResize, 250);
 
+    window.addEventListener('orientationchange', debouncedHandleResize);
     window.addEventListener('resize', debouncedHandleResize);
 
-    return () => window.removeEventListener('resize', debouncedHandleResize);
+    return () => {
+      window.removeEventListener('orientationchange', debouncedHandleResize);
+      window.removeEventListener('resize', debouncedHandleResize);
+    };
   }, []);
 
   return (
