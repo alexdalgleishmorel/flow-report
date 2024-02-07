@@ -1,7 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
-import { WINDOW_HEIGHT_LIMIT } from '../../../App';
+import { isNarrowLandscape } from '../../../App';
 import { FlowDataPoint, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
@@ -122,10 +122,10 @@ export function DailyFlowsChart() {
             title: {
                 display: true,
                 text: data.day.toDateString(),
-                font: { size: window.innerHeight > WINDOW_HEIGHT_LIMIT ? 18 : 10 }
+                font: { size: !isNarrowLandscape() ? 18 : 10 }
             },
             legend: { 
-                display: window.innerHeight > WINDOW_HEIGHT_LIMIT,
+                display: !isNarrowLandscape(),
                 labels: {
                     usePointStyle: true,
                     generateLabels(): LegendItem[] {
