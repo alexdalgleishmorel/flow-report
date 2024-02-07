@@ -1,6 +1,7 @@
 import { IonText, IonRange, IonToggle, IonIcon } from "@ionic/react";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 
+import { WINDOW_HEIGHT_LIMIT } from "../../App";
 import { useData } from "../../dataContext";
 import { isDarkModeEnabled, toggleDarkTheme } from "../../pages/Home";
 import './LowerBanner.css';
@@ -31,7 +32,7 @@ function LowerBanner() {
             <div className='titleValueStacked'>
                 <IonText color='medium' className='title'>ADJUST MINIMUM FLOW</IonText>
                 <div className="rangeContainer">
-                    <IonRange value={targetFlow} min={0} max={50} step={5} pin={true} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
+                    <IonRange value={targetFlow} min={0} max={50} step={5} pin={window.innerHeight > WINDOW_HEIGHT_LIMIT} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                 </div>
             </div>
             <div className='dateContainer'>
