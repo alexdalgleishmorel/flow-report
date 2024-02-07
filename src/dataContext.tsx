@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 import FLOW_DATA from './flowData.json';
@@ -57,6 +58,16 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       clearTimeout(timeoutId);
     };
   }, [flowData]);
+
+  useEffect(() => {
+    const handleResize = () => setStateUpdate((state) => state+1);
+
+    const debouncedHandleResize = debounce(handleResize, 250);
+
+    window.addEventListener('resize', debouncedHandleResize);
+
+    return () => window.removeEventListener('resize', debouncedHandleResize);
+  }, []);
 
   return (
     <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate }}>

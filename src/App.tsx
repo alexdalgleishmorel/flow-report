@@ -23,6 +23,8 @@ import './theme/variables.css';
 
 import { DataProvider } from './dataContext';
 
+export const WINDOW_HEIGHT_LIMIT = 400;
+
 setupIonicReact();
 
 const App: React.FC = () => (
