@@ -1,7 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
-import { isNarrowLandscape } from '../../../App';
+import { isExtremeNarrowWidth, isNarrowLandscape, isNarrowWidth } from '../../../App';
 import { FlowDataPoint, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
@@ -85,7 +85,7 @@ export function DailyFlowsChart() {
                 ticks: {
                     color: (data: any) => getTickerColor(data.index),
                     font: {
-                        size: (data: any) => shouldBold(data.index) ? 12 : (window.innerWidth < 450 ? 6 : 8),
+                        size: (data: any) => shouldBold(data.index) ? (isNarrowWidth() ? 6 : 12) : (isNarrowWidth() ? 6 : 8),
                         weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
                     },
                     autoSkip: false,
@@ -96,7 +96,7 @@ export function DailyFlowsChart() {
             temperature: {
                 position: 'right' as 'right',
                 title: {
-                    display: true,
+                    display: !isExtremeNarrowWidth(),
                     text: 'Temperature'
                 },
                 grid: { display: false },
@@ -108,7 +108,7 @@ export function DailyFlowsChart() {
             volume: {
                 position: 'left' as 'left',
                 title: {
-                    display: true,
+                    display: !isExtremeNarrowWidth(),
                     text: 'Volume'
                 },
                 grid: { display: false },
@@ -131,18 +131,18 @@ export function DailyFlowsChart() {
                     generateLabels(): LegendItem[] {
                         return [
                             {
-                                text: 'Temperature',
-                                datasetIndex: 0,
-                                fillStyle: getLightGrey('FF'),
-                                fontColor: getGrey('FF'),
-                                pointStyle: 'circle'
-                            },
-                            {
                                 text: 'Volume',
                                 datasetIndex: 1,
                                 fillStyle: getBlue('FF'),
                                 fontColor: getGrey('FF'),
                                 pointStyle: 'rect'
+                            },
+                            {
+                                text: 'Temperature',
+                                datasetIndex: 0,
+                                fillStyle: getLightGrey('FF'),
+                                fontColor: getGrey('FF'),
+                                pointStyle: 'circle'
                             }
                         ];
                     }
