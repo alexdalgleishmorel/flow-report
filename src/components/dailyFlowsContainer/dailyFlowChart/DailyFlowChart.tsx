@@ -1,7 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
-import { isExtremeNarrowWidth, isNarrowLandscape, isNarrowWidth } from '../../../App';
+import { isNarrowLandscape, isNarrowWidth } from '../../../App';
 import { FlowDataPoint, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
@@ -96,7 +96,7 @@ export function DailyFlowsChart() {
             temperature: {
                 position: 'right' as 'right',
                 title: {
-                    display: !isExtremeNarrowWidth(),
+                    display: !isNarrowWidth(),
                     text: 'Temperature'
                 },
                 grid: { display: false },
@@ -108,7 +108,7 @@ export function DailyFlowsChart() {
             volume: {
                 position: 'left' as 'left',
                 title: {
-                    display: !isExtremeNarrowWidth(),
+                    display: !isNarrowWidth(),
                     text: 'Volume'
                 },
                 grid: { display: false },

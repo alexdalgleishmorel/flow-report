@@ -32,9 +32,6 @@ export function isNarrowLandscape(): boolean {
 export function isNarrowWidth(): boolean {
   return window.innerWidth < WINDOW_WIDTH_LIMIT;
 }
-export function isExtremeNarrowWidth(): boolean {
-  return window.innerWidth < (WINDOW_WIDTH_LIMIT-100);
-}
 
 setupIonicReact();
 
