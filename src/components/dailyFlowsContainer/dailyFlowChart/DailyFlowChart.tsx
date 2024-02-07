@@ -36,18 +36,8 @@ export function DailyFlowsChart() {
                 type: 'line' as any,
                 label: 'Temperature',
                 data: data.dataPoints.map(dataPoint => dataPoint.temperature),
-                borderColor: data.dataPoints.map(dataPoint => {
-                    if (shouldGreyData(dataPoint)) {
-                        return getLightGrey('33');
-                    }
-                    return getDarkColor('FF');
-                }),
-                backgroundColor: data.dataPoints.map(dataPoint => {
-                    if (shouldGreyData(dataPoint)) {
-                        return getLightGrey('FF');
-                    }
-                    return getDarkColor('FF');
-                }),
+                borderColor: getDarkColor('AA'),
+                backgroundColor: getLightGrey('FF'),
                 yAxisID: 'temperature',
                 order: 0
             },
@@ -142,7 +132,7 @@ export function DailyFlowsChart() {
                             {
                                 text: 'Temperature',
                                 datasetIndex: 0,
-                                fillStyle: getDarkColor('FF'),
+                                fillStyle: getLightGrey('FF'),
                                 fontColor: getGrey('FF'),
                                 pointStyle: 'circle'
                             },
