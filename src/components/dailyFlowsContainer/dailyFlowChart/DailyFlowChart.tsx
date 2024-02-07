@@ -78,6 +78,7 @@ export function DailyFlowsChart() {
     }
     
     const options = {
+        cubicInterpolationMode: 'monotone',
         maintainAspectRatio: false,
         scales: {
             x: {
