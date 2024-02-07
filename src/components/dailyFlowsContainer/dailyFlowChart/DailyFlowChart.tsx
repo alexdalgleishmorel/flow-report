@@ -96,7 +96,7 @@ export function DailyFlowsChart() {
             temperature: {
                 position: 'right' as 'right',
                 title: {
-                    display: !isNarrowWidth(),
+                    display: true,
                     text: 'Temperature'
                 },
                 grid: { display: false },
@@ -108,7 +108,7 @@ export function DailyFlowsChart() {
             volume: {
                 position: 'left' as 'left',
                 title: {
-                    display: !isNarrowWidth(),
+                    display: true,
                     text: 'Volume'
                 },
                 grid: { display: false },
