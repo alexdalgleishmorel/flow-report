@@ -2,7 +2,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, 
 import { Bar } from 'react-chartjs-2';
 
 import { isNarrowLandscape, isNarrowWidth } from '../../../App';
-import { FlowDataPoint, useData } from "../../../dataContext";
+import { FlowDataPoint, getTimeString, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
   
@@ -10,7 +10,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineContro
 
 const valueOnTopPlugin: Plugin = {
     id: 'valueOnTop',
-    afterDraw: (chart: any, args: any, options: any) => {
+    afterDatasetsDraw: (chart: any, args: any, options: any) => {
         let ctx = chart.ctx;
         ctx.textAlign = 'center';
         const fontFamily = 'Arial';
@@ -35,7 +35,7 @@ const valueOnTopPlugin: Plugin = {
   
         chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
             if (dataPoint) {
-                ctx.fillStyle = getDarkColor('AA');
+                ctx.fillStyle = getDark('AA');
                 const bar = chart.getDatasetMeta(1).data[index];
                 const position = bar.tooltipPosition();
                 ctx.fillText(dataPoint, position.x, position.y - fontSize);
@@ -47,7 +47,7 @@ const valueOnTopPlugin: Plugin = {
 ChartJS.register(valueOnTopPlugin);
 
 export function DailyFlowsChart() {
-    const { flowData, targetFlow, selectedIndex } = useData();
+    const { flowData, targetFlow, selectedIndex, twelveHour } = useData();
     const data = flowData[selectedIndex];
 
     let today = new Date();
@@ -75,7 +75,7 @@ export function DailyFlowsChart() {
                 type: 'line' as any,
                 label: 'Temperature',
                 data: data.dataPoints.map(dataPoint => dataPoint.temperature),
-                borderColor: getDarkColor('AA'),
+                borderColor: getDark('AA'),
                 backgroundColor: getLightGrey('FF'),
                 yAxisID: 'temperature',
                 order: 0
@@ -183,7 +183,7 @@ export function DailyFlowsChart() {
                             {
                                 text: 'Temperature',
                                 datasetIndex: 0,
-                                fillStyle: getDarkColor('AA'),
+                                fillStyle: getDark('AA'),
                                 fontColor: getGrey('FF'),
                                 pointStyle: 'circle'
                             }
@@ -193,13 +193,14 @@ export function DailyFlowsChart() {
             },
             tooltip: {
                 displayColors: false,
+                backgroundColor: getLight('FF'),
                 callbacks: {
                     title: (data: any) => {
                         const date: Date = new Date();
                         date.setHours(data[0].label, 0, 0, 0);
-                        const from: string = date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+                        const from: string = getTimeString(date, twelveHour);
                         date.setHours(date.getHours()+1);
-                        const to: string = date.toLocaleString([], {hour: 'numeric', minute: '2-digit'});
+                        const to: string = getTimeString(date, twelveHour);
 
                         return from.concat(' - ').concat(to);
                     },
@@ -224,8 +225,13 @@ function getBlue(alphaHex: string) {
     return color.concat(alphaHex);
 }
 
-function getDarkColor(alphaHex: string) {
+function getDark(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#f4f5f8' : '#222428';
+    return color.concat(alphaHex);
+}
+
+function getLight(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#222428' : '#f4f5f8';
     return color.concat(alphaHex);
 }
 
