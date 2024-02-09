@@ -14,14 +14,12 @@ const valueOnTopPlugin: Plugin = {
         let ctx = chart.ctx;
         ctx.textAlign = 'center';
         const fontFamily = 'Arial';
-  
+        let fontSize = 12;
+
         chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
             if (dataPoint) {
-                ctx.fillStyle = getDarkColor('AA');
                 const bar = chart.getDatasetMeta(1).data[index];
-                const position = bar.tooltipPosition();
 
-                let fontSize = 12;
                 let text = dataPoint.toString();
                 let textWidth;
                 let barWidth = bar.width;
@@ -32,7 +30,14 @@ const valueOnTopPlugin: Plugin = {
                       fontSize -= 1;
                     }
                 } while (textWidth > barWidth && fontSize > 0);
-
+            }
+        });
+  
+        chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
+            if (dataPoint) {
+                ctx.fillStyle = getDarkColor('AA');
+                const bar = chart.getDatasetMeta(1).data[index];
+                const position = bar.tooltipPosition();
                 ctx.fillText(dataPoint, position.x, position.y - fontSize);
             }
         });
