@@ -88,7 +88,7 @@ export function DailyFlowsChart() {
                         return getGreen('FF');
                     }
                     if (shouldGreyData(dataPoint)) {
-                        return getLightGrey('33');
+                        return getLightGrey('AA');
                     }
                     return getBlue('FF');
                 }),
