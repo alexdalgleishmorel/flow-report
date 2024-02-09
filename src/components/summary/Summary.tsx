@@ -29,7 +29,8 @@ export function Summary() {
                     </div>
                 ))}
             </IonContent>
-            <IonFooter>
+            <IonFooter class='summary-footer'>
+                <IonText><b>Mountain Wave Report</b></IonText>
                 <div className="toggleContainer">
                     <IonText color='medium' className='title'>DARK MODE</IonText>
                     <div className="spacer"></div>
