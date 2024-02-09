@@ -55,3 +55,10 @@
         transform: scale(0.75);
     }
 }
+
+.summary-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
