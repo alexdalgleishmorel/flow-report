@@ -20,7 +20,7 @@ const FlowDataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [targetFlow, setTargetFlow] = useState<number>(25);
+  const [targetFlow, setTargetFlow] = useState<number>(30);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
 
