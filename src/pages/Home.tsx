@@ -2,7 +2,6 @@ import { IonContent, IonFooter, IonHeader, IonPage, IonSpinner, IonText } from '
 import { useEffect } from 'react';
 
 import LowerBanner from '../components/banner/LowerBanner';
-import UpperBanner from '../components/banner/UpperBanner';
 import DailyFlowsContainer from '../components/dailyFlowsContainer/DailyFlowsContainer';
 import { useData } from '../dataContext';
 import './Home.css';
@@ -18,7 +17,6 @@ const Home = () => {
 
   const graphView = (
     <div className='graph-content'>
-      <IonHeader><UpperBanner /></IonHeader>
       <IonContent scrollY={false} fullscreen><DailyFlowsContainer /></IonContent>
       <IonFooter><LowerBanner /></IonFooter>
     </div>
