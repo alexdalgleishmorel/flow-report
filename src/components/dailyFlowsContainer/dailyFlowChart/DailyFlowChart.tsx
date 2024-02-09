@@ -1,4 +1,4 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem, Plugin } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 import { isNarrowLandscape, isNarrowWidth } from '../../../App';
@@ -7,6 +7,39 @@ import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
   
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend);
+
+const valueOnTopPlugin: Plugin = {
+    id: 'valueOnTop',
+    afterDraw: (chart: any, args: any, options: any) => {
+        let ctx = chart.ctx;
+        ctx.textAlign = 'center';
+        const fontFamily = 'Arial';
+  
+        chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
+            if (dataPoint) {
+                ctx.fillStyle = getDarkColor('AA');
+                const bar = chart.getDatasetMeta(1).data[index];
+                const position = bar.tooltipPosition();
+
+                let fontSize = 12;
+                let text = dataPoint.toString();
+                let textWidth;
+                let barWidth = bar.width;
+                do {
+                    ctx.font = `${fontSize}px ${fontFamily}`;
+                    textWidth = ctx.measureText(text).width;
+                    if (textWidth > barWidth) {
+                      fontSize -= 1;
+                    }
+                } while (textWidth > barWidth && fontSize > 0);
+
+                ctx.fillText(dataPoint, position.x, position.y - fontSize);
+            }
+        });
+    }
+};
+
+ChartJS.register(valueOnTopPlugin);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex } = useData();
@@ -76,6 +109,9 @@ export function DailyFlowsChart() {
     const shouldBold = (index: number): boolean => {
         return isCurrentTime({ hour: index, volume: 0 }) || index === data.sunriseHour || index === data.sunsetHour;
     }
+
+    const maxVolume = Math.max(...data.dataPoints.map(dataPoint => dataPoint.volume));
+    const maxVolumeScale = Math.ceil(1.5*maxVolume) % 2 === 0 ? Math.ceil(1.5*maxVolume) : Math.ceil(1.5*maxVolume)+1;
     
     const options = {
         cubicInterpolationMode: 'monotone',
@@ -116,7 +152,8 @@ export function DailyFlowsChart() {
                 display: true,
                 ticks: {
                     color: () => getGrey('FF')
-                }
+                },
+                max: maxVolumeScale
             }
         },
         plugins: {

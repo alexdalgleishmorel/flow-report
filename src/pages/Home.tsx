@@ -2,26 +2,29 @@ import { IonContent, IonFooter, IonHeader, IonPage, IonSpinner, IonText } from '
 import { useEffect } from 'react';
 
 import LowerBanner from '../components/banner/LowerBanner';
-import UpperBanner from '../components/banner/UpperBanner';
 import DailyFlowsContainer from '../components/dailyFlowsContainer/DailyFlowsContainer';
 import { useData } from '../dataContext';
 import './Home.css';
+import Summary from '../components/summary/Summary';
 
 
 const Home = () => {
-  const { flowData } = useData();
+  const { flowData, selectedIndex } = useData();
 
   useEffect(() => {
     toggleDarkTheme(isDarkModeDefault());
   }, []);
 
+  const graphView = (
+    <div className='graph-content'>
+      <IonContent scrollY={false} fullscreen><DailyFlowsContainer /></IonContent>
+      <IonFooter><LowerBanner /></IonFooter>
+    </div>
+  );
+
   const content = flowData.length ? (
     <IonPage>
-      <IonHeader><UpperBanner /></IonHeader>
-      <IonContent scrollY={false} fullscreen>
-        <div className='content'><DailyFlowsContainer /></div>
-      </IonContent>
-      <IonFooter><LowerBanner /></IonFooter>
+      {selectedIndex >= 0 ? <IonContent>{graphView}</IonContent> : <IonContent><Summary></Summary></IonContent>}
     </IonPage>
   ) : <Loading></Loading>;
 
@@ -30,7 +33,7 @@ const Home = () => {
 
 function Loading() {
   return (
-    <div className='content'>
+    <div className='full-screen-content'>
       <IonSpinner name='dots'></IonSpinner>
       <IonText color='primary'>Fetching River Data</IonText>
     </div>

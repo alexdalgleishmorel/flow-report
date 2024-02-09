@@ -20,8 +20,8 @@ const FlowDataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [targetFlow, setTargetFlow] = useState<number>(25);
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [targetFlow, setTargetFlow] = useState<number>(30);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
 
   useEffect(() => {
@@ -126,6 +126,42 @@ function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
     }
   });
   return flowData;
+}
+
+export function calculateTargetDateRange(targetFlow: number, flowData: FlowData[]): Date[] {
+  let targetDateRange: Date[] = [];
+  flowData.forEach(entry => {
+      const day: Date = entry.day;
+      entry.dataPoints.forEach(dataPoint => {
+          const currentDate = new Date();
+          const currentHour = currentDate.getHours();
+          if (currentDate < day || currentHour <= dataPoint.hour) {
+              if (dataPoint.volume >= targetFlow && targetDateRange.length == 0) {
+                  let startTime = new Date(day);
+                  startTime.setHours(dataPoint.hour);
+                  targetDateRange.push(startTime);
+              }
+              if (dataPoint.volume < targetFlow && targetDateRange.length == 1) {
+                  let endTime = new Date(day);
+                  endTime.setHours(dataPoint.hour);
+                  targetDateRange.push(endTime);
+              }
+          }
+      });
+  });
+  return targetDateRange;
+}
+
+export function isUpcomingTargetDateRange(dateRange: Date[]): boolean {
+  return Date.now() < dateRange[0]?.getTime();
+}
+
+export function isInsideTargetDateRange(dateRange: Date[]): boolean {
+  return Date.now() >= dateRange[0]?.getTime() && Date.now() <= dateRange[1]?.getTime();
+}
+
+export function isIndefiniteTargetDateRange(dateRange: Date[]): boolean {
+  return dateRange.length === 1;
 }
 
 export interface FlowData {
