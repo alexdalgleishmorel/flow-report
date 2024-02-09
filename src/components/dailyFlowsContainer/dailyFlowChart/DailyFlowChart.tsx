@@ -193,7 +193,6 @@ export function DailyFlowsChart() {
             },
             tooltip: {
                 displayColors: false,
-                backgroundColor: getLight('FF'),
                 callbacks: {
                     title: (data: any) => {
                         const date: Date = new Date();
@@ -227,11 +226,6 @@ function getBlue(alphaHex: string) {
 
 function getDark(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#f4f5f8' : '#222428';
-    return color.concat(alphaHex);
-}
-
-function getLight(alphaHex: string) {
-    const color = isDarkModeEnabled() ? '#222428' : '#f4f5f8';
     return color.concat(alphaHex);
 }
 
