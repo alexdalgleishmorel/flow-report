@@ -1,9 +1,7 @@
-import { IonText, IonRange, IonToggle, IonIcon } from "@ionic/react";
-import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
+import { IonText, IonRange, IonIcon } from "@ionic/react";
+import { chevronBackOutline, chevronForwardOutline, homeOutline } from "ionicons/icons";
 
-import { isNarrowLandscape } from "../../App";
 import { useData } from "../../dataContext";
-import { isDarkModeEnabled, toggleDarkTheme } from "../../pages/Home";
 import './LowerBanner.css';
 
 
@@ -17,25 +15,23 @@ function LowerBanner() {
         }
     };
 
-    const handleThemeChange = (value: boolean) => {
-        toggleDarkTheme(value);
-        setStateUpdate(stateUpdate+1);
-    };
-
     return (
         <div className='bannerContainer'>
-            <div className="toggleContainer">
-                <IonText color='medium' className='title'>DARK MODE</IonText>
-                <div className="spacer"></div>
-                <IonToggle checked={isDarkModeEnabled()} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
+            <div className='titleValueStacked first'>
+                <IonIcon
+                    color="medium"
+                    icon={homeOutline} 
+                    size="large"
+                    onClick={() => setSelectedIndex(-1) }
+                ></IonIcon>
             </div>
-            <div className='titleValueStacked'>
-                <IonText color='medium' className='title'>ADJUST MINIMUM FLOW</IonText>
+            <div className='titleValueStacked middle'>
+                <IonText color='primary'><b>{targetFlow} m³/s</b></IonText>
                 <div className="rangeContainer">
-                    <IonRange value={targetFlow} min={0} max={50} step={5} pin={!isNarrowLandscape()} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
+                    <IonRange value={targetFlow} min={25} max={35} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                 </div>
             </div>
-            <div className='dateContainer'>
+            <div className='dateContainer last'>
                 <IonText color={'medium'} className='title'>{flowData[selectedIndex].day.toDateString().split(' ').slice(1).join(' ')}</IonText>
                 <div className="row">
                     <IonIcon 
