@@ -33,6 +33,10 @@
     .title {
         font-size: 50%;
     }
+
+    :hover {
+        cursor: pointer;
+    }
 }
 
 .rangeContainer {
