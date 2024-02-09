@@ -1,31 +1,41 @@
-import { IonCardSubtitle, IonContent, IonText } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonFooter, IonText, IonToggle } from '@ionic/react';
 
 import { FlowData, calculateTargetDateRange, useData } from '../../dataContext';
 import './Summary.css';
+import { isDarkModeEnabled, toggleDarkTheme } from '../../pages/Home';
 
 export function Summary() {
-    const { flowData, setSelectedIndex } = useData();
+    const { flowData, stateUpdate, setSelectedIndex, setStateUpdate } = useData();
+    const handleThemeChange = (value: boolean) => {
+        toggleDarkTheme(value);
+        setStateUpdate(stateUpdate+1);
+    };
     return (
         <div className='summary-screen-content'>
-                <div className='list'>
-                    <IonContent>
-                        {flowData.map((item, index) => (
-                            <div key={item.day.toString()} className='item-container' onClick={() => setSelectedIndex(index)}>
-                                <div className='item-content'>
-                                    <IonCardSubtitle class='item-title' color='medium'>{item.day.toDateString()}</IonCardSubtitle>
-                                    <div className='titleValueStacked'>
-                                        <IonText className='title' color='medium'>PEAK FLOW</IonText>
-                                        <IonText color='primary'><b>{getPeakFlow(item)} m³/s</b></IonText>
-                                    </div>
-                                    <div className='titleValueStacked'>
-                                        <IonText className='title' color='medium'>TIME</IonText>
-                                        <IonText color='primary'><b>{getPeakFlowTimeRange(item)}</b></IonText>
-                                    </div>
-                                </div>
+            <IonContent>
+                {flowData.map((item, index) => (
+                    <div key={item.day.toString()} className='item-container' onClick={() => setSelectedIndex(index)}>
+                        <div className='item-content'>
+                            <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
+                            <div className='titleValueStacked'>
+                                <IonText className='title' color='medium'>PEAK FLOW</IonText>
+                                <IonText color='primary'><b>{getPeakFlow(item)} m³/s</b></IonText>
                             </div>
-                        ))}
-                    </IonContent>
+                            <div className='titleValueStacked'>
+                                <IonText className='title' color='medium'>TIME</IonText>
+                                <IonText color='primary'><b>{getPeakFlowTimeRange(item)}</b></IonText>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </IonContent>
+            <IonFooter>
+                <div className="toggleContainer">
+                    <IonText color='medium' className='title'>DARK MODE</IonText>
+                    <div className="spacer"></div>
+                    <IonToggle checked={isDarkModeEnabled()} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
                 </div>
+            </IonFooter>
         </div>
     );
 }
