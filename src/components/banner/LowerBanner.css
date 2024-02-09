@@ -1,5 +1,6 @@
 .bannerContainer {
     padding-top: 10px;
+    padding-bottom: 10px;
     padding-left: 20px;
     padding-right: 20px;
     width: 100%;
@@ -49,6 +50,10 @@
     justify-content: center;
     align-items: center;
 
+    .small-spacer {
+        padding: 2px;
+    }
+
     .spacer {
         padding: 4px;
     }
@@ -68,4 +73,12 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+
+    .small-spacer {
+        padding: 5px;
+    }
+}
+
+.flow-value {
+    white-space: nowrap;
 }
