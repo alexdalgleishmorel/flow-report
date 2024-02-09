@@ -14,6 +14,8 @@ interface DataContextType {
   setSelectedIndex: (index: number) => void;
   stateUpdate: number;
   setStateUpdate: (state: number) => void;
+  twelveHour: boolean;
+  setTwelveHour: (set: boolean) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [targetFlow, setTargetFlow] = useState<number>(30);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
+  const [twelveHour, setTwelveHour] = useState<boolean>(true);
 
   useEffect(() => {
     setFlowData(processFlowData(FLOW_DATA, WEATHER_DATA));
@@ -67,7 +70,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, twelveHour, setTwelveHour }}>
       {children}
     </FlowDataContext.Provider>
   );
@@ -135,17 +138,15 @@ export function calculateTargetDateRange(targetFlow: number, flowData: FlowData[
       entry.dataPoints.forEach(dataPoint => {
           const currentDate = new Date();
           const currentHour = currentDate.getHours();
-          if (currentDate < day || currentHour <= dataPoint.hour) {
-              if (dataPoint.volume >= targetFlow && targetDateRange.length == 0) {
-                  let startTime = new Date(day);
-                  startTime.setHours(dataPoint.hour);
-                  targetDateRange.push(startTime);
-              }
-              if (dataPoint.volume < targetFlow && targetDateRange.length == 1) {
-                  let endTime = new Date(day);
-                  endTime.setHours(dataPoint.hour);
-                  targetDateRange.push(endTime);
-              }
+          if (dataPoint.volume >= targetFlow && targetDateRange.length == 0) {
+              let startTime = new Date(day);
+              startTime.setHours(dataPoint.hour);
+              targetDateRange.push(startTime);
+          }
+          if (dataPoint.volume < targetFlow && targetDateRange.length == 1) {
+              let endTime = new Date(day);
+              endTime.setHours(dataPoint.hour);
+              targetDateRange.push(endTime);
           }
       });
   });
@@ -162,6 +163,10 @@ export function isInsideTargetDateRange(dateRange: Date[]): boolean {
 
 export function isIndefiniteTargetDateRange(dateRange: Date[]): boolean {
   return dateRange.length === 1;
+}
+
+export function getTimeString(date: Date, twelveHour: boolean): string {
+  return date.toLocaleString([], {hour12: twelveHour, hour: 'numeric', minute: '2-digit'});
 }
 
 export interface FlowData {
