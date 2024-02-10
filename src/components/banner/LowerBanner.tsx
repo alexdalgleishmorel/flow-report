@@ -1,4 +1,4 @@
-import { IonText, IonIcon } from "@ionic/react";
+import { IonText, IonIcon, IonRange } from "@ionic/react";
 import { addOutline, chevronBackOutline, chevronForwardOutline, homeOutline, removeOutline } from "ionicons/icons";
 
 import { useData } from "../../dataContext";
@@ -9,7 +9,12 @@ const MAXIMUM_FLOW_RATE = 35;
 
 function LowerBanner() {
     const { flowData, targetFlow, selectedIndex, stateUpdate, setTargetFlow, setSelectedIndex, setStateUpdate } = useData();
-
+    const handleSliderChange = (value: number) => {
+        value = !value ? 1 : value;
+        if (value !== targetFlow) {
+            setTargetFlow(value);
+        }
+    };
     return (
         <div className='bannerContainer'>
             <div className='titleValueStacked first'>
@@ -20,28 +25,14 @@ function LowerBanner() {
                 ></IonIcon>
             </div>
             <div className='titleValueStacked middle'>
-                <IonText color='medium' className="title">Minimum Flow</IonText>
-                <div className="row">
-                    <IonIcon 
-                        color={targetFlow === MINIMUM_FLOW_RATE ? 'light' : 'dark'}
-                        icon={removeOutline} 
-                        onClick={() => targetFlow !== MINIMUM_FLOW_RATE ? setTargetFlow(targetFlow-1) : setTargetFlow(targetFlow) }
-                    >
-                    </IonIcon>
-                    <div className="small-spacer"></div>
-                    <IonText color='primary' className="flow-value"><b>{targetFlow} m³/s</b></IonText>
-                    <div className="small-spacer"></div>
-                    <IonIcon 
-                        color={targetFlow === MAXIMUM_FLOW_RATE ? 'light' : 'dark'}
-                        icon={addOutline} 
-                        onClick={() => targetFlow !== MAXIMUM_FLOW_RATE ? setTargetFlow(targetFlow+1) : setTargetFlow(targetFlow) }
-                    >
-                    </IonIcon>
+                <IonText color='primary' className="flow-value"><b>{targetFlow} m³/s</b></IonText>
+                <div className="small-spacer"></div>
+                <div className="rangeContainer">
+                    <IonRange mode="md" value={targetFlow} min={25} max={35} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                 </div>
             </div>
             <div className='dateContainer last'>
                 <IonText color={'medium'} className='title'>{flowData[selectedIndex].day.toDateString().split(' ').slice(1).join(' ')}</IonText>
-                <div className="small-spacer"></div>
                 <div className="row">
                     <IonIcon 
                         color={!selectedIndex ? 'light' : 'dark'}

@@ -1,8 +1,8 @@
 .bannerContainer {
-    padding-top: 10px;
-    padding-bottom: 10px;
     padding-left: 20px;
     padding-right: 20px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     width: 100%;
     width: 100%;
     display: flex;
@@ -41,7 +41,17 @@
 }
 
 .rangeContainer {
-    width: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    ion-range {
+        height: 5px;
+        --bar-height: 5px;
+        --knob-size: 0px;
+        --knob-background: transparent;
+    }
 }
 
 .dateContainer {
@@ -50,12 +60,8 @@
     justify-content: center;
     align-items: center;
 
-    .small-spacer {
-        padding: 2px;
-    }
-
     .spacer {
-        padding: 4px;
+        padding: 10px;
     }
 
     .title {
@@ -79,6 +85,11 @@
     }
 }
 
+.small-spacer {
+    padding: 2px;
+}
+
 .flow-value {
+    font-size: 75%;
     white-space: nowrap;
 }
