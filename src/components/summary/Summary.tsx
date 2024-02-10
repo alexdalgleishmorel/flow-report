@@ -70,15 +70,15 @@ export function Summary() {
             <IonContent>
                 <div className='summary-footer'>
                     <div className="toggleContainer first">
-                        <IonToggle checked={isDarkModeEnabled()} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
-                        <div className='spacer'></div>
                         <IonText color='medium' className='title'>DARK MODE</IonText>
+                        <div className='spacer'></div>
+                        <IonToggle checked={isDarkModeEnabled()} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
                     </div>
                     <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
                     <div className="toggleContainer last">
-                        <IonToggle checked={twelveHour} onIonChange={event => handleTwelveHourChange(event.detail.checked)}></IonToggle>
-                        <div className='spacer'></div>
                         <IonText color='medium' className='title'>12 HOUR</IonText>
+                        <div className='spacer'></div>
+                        <IonToggle checked={twelveHour} onIonChange={event => handleTwelveHourChange(event.detail.checked)}></IonToggle>
                     </div>
                 </div>
                 <div className='spacer'></div>
