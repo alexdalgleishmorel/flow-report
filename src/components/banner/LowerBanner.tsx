@@ -1,8 +1,9 @@
-import { IonText, IonIcon, IonRange } from "@ionic/react";
-import { addOutline, chevronBackOutline, chevronForwardOutline, homeOutline, removeOutline } from "ionicons/icons";
+import { IonText, IonIcon, IonRange, IonModal, IonContent, IonFooter, IonButton } from "@ionic/react";
+import { chevronBackOutline, chevronForwardOutline, homeOutline } from "ionicons/icons";
 
 import { useData } from "../../dataContext";
 import './LowerBanner.css';
+import { useRef } from "react";
 
 const MINIMUM_FLOW_RATE = 25;
 const MAXIMUM_FLOW_RATE = 35;
@@ -15,6 +16,7 @@ function LowerBanner() {
             setTargetFlow(value);
         }
     };
+    const modal = useRef<HTMLIonModalElement>(null);
     return (
         <div className='bannerContainer'>
             <div className='titleValueStacked first'>
@@ -24,11 +26,28 @@ function LowerBanner() {
                     onClick={() => setSelectedIndex(-1) }
                 ></IonIcon>
             </div>
-            <div className='titleValueStacked middle'>
+            <div className='titleValueStacked middle' id="open-flow-change-modal">
+                <IonText color='medium' className="title">MINIMUM FLOW</IonText>
                 <IonText color='primary' className="flow-value"><b>{targetFlow} m³/s</b></IonText>
-                <div className="rangeContainer">
-                    <IonRange mode="md" value={targetFlow} min={25} max={35} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
-                </div>
+                <IonModal ref={modal} trigger="open-flow-change-modal">
+                    <IonContent>
+                        <div className="modal-content">
+                            <IonText className="modal-description" color='medium'>
+                                Slide to adjust the minimum flow rate.
+                            </IonText>
+                            <IonText color='primary'><b>{targetFlow} m³/s</b></IonText>
+                            <div className="rangeContainer">
+                                <IonRange value={targetFlow} min={MINIMUM_FLOW_RATE} max={MAXIMUM_FLOW_RATE} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
+                            </div>
+                            <IonText className="modal-description" color='medium'>
+                                Flows that meet this rate will be highlighted.
+                            </IonText>
+                        </div>
+                    </IonContent>
+                    <IonFooter className="modal-footer">
+                        <IonButton shape="round" color='primary' onClick={() => modal.current?.dismiss()}>CLOSE</IonButton>
+                    </IonFooter>
+                </IonModal>
             </div>
             <div className='dateContainer last'>
                 <IonText color={'medium'} className='title'>{flowData[selectedIndex].day.toDateString().split(' ').slice(1).join(' ')}</IonText>
