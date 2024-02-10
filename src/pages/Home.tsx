@@ -24,7 +24,7 @@ const Home = () => {
 
   const content = flowData.length ? (
     <IonPage>
-      {selectedIndex >= 0 ? <IonContent>{graphView}</IonContent> : <IonContent><Summary></Summary></IonContent>}
+      {selectedIndex >= 0 ? <IonContent scrollY={false}>{graphView}</IonContent> : <IonContent scrollY={false}><Summary></Summary></IonContent>}
     </IonPage>
   ) : <Loading></Loading>;
 
