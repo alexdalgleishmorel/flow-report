@@ -114,9 +114,6 @@ export function DailyFlowsChart() {
     const shouldBold = (index: number): boolean => {
         return isCurrentTime({ hour: index, volume: 0 }) || index === data.sunriseHour || index === data.sunsetHour;
     }
-
-    const maxVolume = Math.max(...data.dataPoints.map(dataPoint => dataPoint.volume));
-    const maxVolumeScale = Math.ceil(1.5*maxVolume) % 2 === 0 ? Math.ceil(1.5*maxVolume) : Math.ceil(1.5*maxVolume)+1;
     
     const options = {
         cubicInterpolationMode: 'monotone',
@@ -157,8 +154,7 @@ export function DailyFlowsChart() {
                 display: true,
                 ticks: {
                     color: () => getGrey('FF')
-                },
-                max: maxVolumeScale
+                }
             }
         },
         plugins: {
