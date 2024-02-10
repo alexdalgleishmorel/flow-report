@@ -44,7 +44,18 @@ const valueOnTopPlugin: Plugin = {
     }
 };
 
-ChartJS.register(valueOnTopPlugin);
+const paddingBelowLegendPlugin: Plugin =  {
+    id: 'paddingBelowLegend',
+    beforeInit(chart: any) {
+        const originalFit = chart.legend.fit;
+        chart.legend.fit = function fit() {
+          originalFit.bind(chart.legend)();
+          this.height += 15;
+        }
+    }
+}
+
+ChartJS.register(valueOnTopPlugin, paddingBelowLegendPlugin);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex, twelveHour } = useData();
@@ -166,6 +177,7 @@ export function DailyFlowsChart() {
             legend: { 
                 display: !isNarrowLandscape(),
                 labels: {
+                    padding: 20,
                     usePointStyle: true,
                     generateLabels(): LegendItem[] {
                         return [
