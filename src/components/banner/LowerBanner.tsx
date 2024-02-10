@@ -26,7 +26,6 @@ function LowerBanner() {
             </div>
             <div className='titleValueStacked middle'>
                 <IonText color='primary' className="flow-value"><b>{targetFlow} m³/s</b></IonText>
-                <div className="small-spacer"></div>
                 <div className="rangeContainer">
                     <IonRange mode="md" value={targetFlow} min={25} max={35} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                 </div>
