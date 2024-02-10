@@ -89,6 +89,7 @@ export function DailyFlowsChart() {
                 borderColor: getDark('AA'),
                 backgroundColor: getLightGrey('FF'),
                 yAxisID: 'temperature',
+                pointRadius: 2,
                 order: 0
             },
             {
