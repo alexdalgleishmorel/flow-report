@@ -11,6 +11,10 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineContro
 const valueOnTopPlugin: Plugin = {
     id: 'valueOnTop',
     afterDatasetsDraw: (chart: any, args: any, options: any) => {
+        if (chart.getDatasetMeta(1).hidden) {
+            return;
+        }
+
         let ctx = chart.ctx;
         ctx.textAlign = 'center';
         const fontFamily = 'Arial';
@@ -182,21 +186,23 @@ export function DailyFlowsChart() {
                 labels: {
                     padding: 20,
                     usePointStyle: true,
-                    generateLabels(): LegendItem[] {
+                    generateLabels(chart: any): LegendItem[] {
                         return [
                             {
                                 text: 'Volume',
                                 datasetIndex: 1,
                                 fillStyle: getBlue('FF'),
                                 fontColor: getGrey('FF'),
-                                pointStyle: 'rect'
+                                pointStyle: 'rect',
+                                hidden: chart.getDatasetMeta(1).hidden
                             },
                             {
                                 text: 'Temperature',
                                 datasetIndex: 0,
                                 fillStyle: getDark('AA'),
                                 fontColor: getGrey('FF'),
-                                pointStyle: 'circle'
+                                pointStyle: 'circle',
+                                hidden: chart.getDatasetMeta(0).hidden
                             }
                         ];
                     }
