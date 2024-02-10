@@ -23,11 +23,11 @@ import './theme/variables.css';
 
 import { DataProvider } from './dataContext';
 
-const WINDOW_HEIGHT_LIMIT = 400;
+const WINDOW_HEIGHT_LIMIT = 375;
 const WINDOW_WIDTH_LIMIT = 450;
 
 export function isNarrowLandscape(): boolean {
-  return window.innerHeight <= WINDOW_HEIGHT_LIMIT && window.matchMedia("(orientation: landscape)").matches;
+  return window.innerHeight < WINDOW_HEIGHT_LIMIT && window.matchMedia("(orientation: landscape)").matches;
 }
 export function isNarrowWidth(): boolean {
   return window.innerWidth < WINDOW_WIDTH_LIMIT;
