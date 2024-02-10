@@ -23,7 +23,7 @@ import './theme/variables.css';
 
 import { DataProvider } from './dataContext';
 
-const WINDOW_HEIGHT_LIMIT = 375;
+const WINDOW_HEIGHT_LIMIT = 300;
 const WINDOW_WIDTH_LIMIT = 450;
 
 export function isNarrowLandscape(): boolean {
