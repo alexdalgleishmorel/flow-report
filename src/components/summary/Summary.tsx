@@ -1,8 +1,56 @@
-import { IonCardSubtitle, IonContent, IonFooter, IonHeader, IonText, IonToggle } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic/react';
 
-import { FlowData, calculateTargetDateRange, getTimeString, useData } from '../../dataContext';
+import { FlowData, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
 import { isDarkModeEnabled, toggleDarkTheme } from '../../pages/Home';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { useState } from 'react';
+
+interface FlowTimeRangeProps {
+    flowTimeRanges: Date[][];
+}
+
+function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
+    const { twelveHour } = useData();
+    const [timeRangeIndex, setTimeRangeIndex] = useState<number>(0);
+    const handleBackwardTimeRangeNavigation = (event: any) => {
+        event.stopPropagation();
+        timeRangeIndex ? setTimeRangeIndex(timeRangeIndex-1) : setTimeRangeIndex(timeRangeIndex);
+    };
+    const handleForwardTimeRangeNavigation = (event: any) => {
+        event.stopPropagation();
+        timeRangeIndex < flowTimeRanges.length-1 ? setTimeRangeIndex(timeRangeIndex+1) : setTimeRangeIndex(timeRangeIndex);
+    };
+    const multiTimeDisplay = (
+        <div className='titleValueStacked'>
+            <IonText className='title' color='medium'>TIME {timeRangeIndex+1} / {flowTimeRanges.length}</IonText>
+            <div className="row">
+                <IonIcon 
+                    color={!timeRangeIndex ? 'light' : 'dark'}
+                    icon={chevronBackOutline} 
+                    onClick={handleBackwardTimeRangeNavigation}
+                >
+                </IonIcon>
+                <div className="small-spacer"></div>
+                <IonText color='primary'><b>{getFlowTimeRange(flowTimeRanges[timeRangeIndex], twelveHour)}</b></IonText>
+                <div className="small-spacer"></div>
+                <IonIcon 
+                    color={!(timeRangeIndex < flowTimeRanges.length-1) ? 'light' : 'dark'}
+                    icon={chevronForwardOutline} 
+                    onClick={handleForwardTimeRangeNavigation}
+                >
+                </IonIcon>
+            </div>
+        </div>
+    );
+    const singleTimeDisplay = (
+        <div className='titleValueStacked'>
+            <IonText className='title' color='medium'>TIME</IonText>
+            <IonText color='primary'><b>{getFlowTimeRange(flowTimeRanges[timeRangeIndex], twelveHour)}</b></IonText>
+        </div>
+    );
+    return flowTimeRanges.length > 1 ? multiTimeDisplay : singleTimeDisplay;
+}
 
 export function Summary() {
     const { flowData, stateUpdate, twelveHour, setSelectedIndex, setStateUpdate, setTwelveHour } = useData();
@@ -13,6 +61,10 @@ export function Summary() {
     const handleTwelveHourChange = (value: boolean) => {
         setTwelveHour(value);
     };
+    const dailyPeakFlowTimeRanges: Date[][][] = [];
+    flowData.forEach(data => {
+        dailyPeakFlowTimeRanges.push(calculateTargetDateRanges(getPeakFlow(data), data));
+    });
     return (
         <div className='summary-screen-content'>
             <IonContent>
@@ -42,10 +94,7 @@ export function Summary() {
                                 <IonText className='title' color='medium'>PEAK FLOW</IonText>
                                 <IonText color='primary'><b>{getPeakFlow(item)} m³/s</b></IonText>
                             </div>
-                            <div className='titleValueStacked'>
-                                <IonText className='title' color='medium'>TIME</IonText>
-                                <IonText color='primary'><b>{getPeakFlowTimeRange(item, twelveHour)}</b></IonText>
-                            </div>
+                            <FlowTimeRange flowTimeRanges={dailyPeakFlowTimeRanges[index]}></FlowTimeRange>
                         </div>
                     </div>
                 ))}
@@ -58,8 +107,7 @@ function getPeakFlow(data: FlowData): number {
     return Math.max(...data.dataPoints.map(data => data.volume))
 }
 
-function getPeakFlowTimeRange(data: FlowData, twelveHour: boolean): string {
-    const timeRange: Date[] = calculateTargetDateRange(getPeakFlow(data), [data]);
+function getFlowTimeRange(timeRange: Date[], twelveHour: boolean): string {
     if (timeRange.length == 2) {
         return `${getTimeString(timeRange[0], twelveHour)} - ${getTimeString(timeRange[1], twelveHour)}`;
     }

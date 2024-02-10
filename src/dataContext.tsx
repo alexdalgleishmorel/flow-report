@@ -131,26 +131,33 @@ function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
   return flowData;
 }
 
-export function calculateTargetDateRange(targetFlow: number, flowData: FlowData[]): Date[] {
-  let targetDateRange: Date[] = [];
-  flowData.forEach(entry => {
-      const day: Date = entry.day;
-      entry.dataPoints.forEach(dataPoint => {
-          const currentDate = new Date();
-          const currentHour = currentDate.getHours();
-          if (dataPoint.volume >= targetFlow && targetDateRange.length == 0) {
-              let startTime = new Date(day);
-              startTime.setHours(dataPoint.hour);
-              targetDateRange.push(startTime);
-          }
-          if (dataPoint.volume < targetFlow && targetDateRange.length == 1) {
-              let endTime = new Date(day);
-              endTime.setHours(dataPoint.hour);
-              targetDateRange.push(endTime);
-          }
-      });
+export function calculateTargetDateRanges(targetFlow: number, flowData: FlowData): Date[][] {
+  let ranges: Date[][] = [];
+  let timeRange: Date[] = [];
+  const day: Date = flowData.day;
+  flowData.dataPoints.forEach(dataPoint => {
+    if (dataPoint.volume >= targetFlow && timeRange.length == 0) {
+        let startTime = new Date(day);
+        startTime.setHours(dataPoint.hour);
+        timeRange.push(startTime);
+    }
+    if (dataPoint.volume < targetFlow && timeRange.length == 1) {
+        let endTime = new Date(day);
+        endTime.setHours(dataPoint.hour);
+        timeRange.push(endTime);
+    }
+    if (timeRange.length == 2) {
+      ranges.push(timeRange);
+      timeRange = [];
+    }
   });
-  return targetDateRange;
+  if (timeRange.length) {
+    let endTime = new Date(day);
+    endTime.setHours(24);
+    timeRange.push(endTime);
+    ranges.push(timeRange);
+  }
+  return ranges;
 }
 
 export function isUpcomingTargetDateRange(dateRange: Date[]): boolean {
