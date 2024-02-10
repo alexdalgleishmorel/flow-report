@@ -92,6 +92,10 @@
     font-size: 80%;
 }
 
+.small-spacer {
+    padding: 5px;
+}
+
 .spacer {
     padding: 10px;
 }
