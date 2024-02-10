@@ -45,13 +45,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    ion-range {
-        height: 5px;
-        --bar-height: 5px;
-        --knob-size: 0px;
-        --knob-background: transparent;
-    }
 }
 
 .dateContainer {
@@ -88,4 +81,33 @@
 .flow-value {
     font-size: 75%;
     white-space: nowrap;
+}
+
+.modal-content {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-description {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    font-size: 80%;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
