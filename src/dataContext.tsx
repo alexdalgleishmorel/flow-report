@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import FLOW_DATA from './flowData.json';
 import WEATHER_DATA from './weatherData.json';
 import TIME_DATA from './timeData.json';
+import { PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
 
 interface DataContextType {
   flowData: FlowData[];
@@ -14,22 +15,42 @@ interface DataContextType {
   setSelectedIndex: (index: number) => void;
   stateUpdate: number;
   setStateUpdate: (state: number) => void;
+  darkMode: boolean;
+  setDarkMode: (state: boolean) => void;
   twelveHour: boolean;
-  setTwelveHour: (set: boolean) => void;
+  setTwelveHour: (state: boolean) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+  const getDarkModePreference = (): boolean => {
+    return localStorage.getItem(PREFERS_DARK_COLOR_SCHEME) ? getPrefersDarkFromStorage() : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  const getTwelveHourPreference = (): boolean => {
+    return localStorage.getItem(PREFERS_TWELVE_HOUR) ? getPrefersTwelveHourFromStorage() : true;
+  };
+
   const [flowData, setFlowData] = useState<FlowData[]>([]);
   const [targetFlow, setTargetFlow] = useState<number>(30);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
-  const [twelveHour, setTwelveHour] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(getDarkModePreference());
+  const [twelveHour, setTwelveHour] = useState<boolean>(getTwelveHourPreference());
 
   useEffect(() => {
     setFlowData(processFlowData(FLOW_DATA, WEATHER_DATA));
   }, []);
+
+  const setDarkTheme = (state: boolean) => {
+    document.body.classList.toggle('dark', state);
+  }
+
+  useEffect(() => {
+    setDarkTheme(darkMode);
+    localStorage.setItem(PREFERS_DARK_COLOR_SCHEME, String(darkMode));
+    localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
+  }, [darkMode, twelveHour]);
 
   useEffect(() => {
     const updateOnHour = () => {
@@ -70,7 +91,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, twelveHour, setTwelveHour }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour }}>
       {children}
     </FlowDataContext.Provider>
   );
@@ -174,6 +195,14 @@ export function isIndefiniteTargetDateRange(dateRange: Date[]): boolean {
 
 export function getTimeString(date: Date, twelveHour: boolean): string {
   return date.toLocaleString([], {hour12: twelveHour, hour: 'numeric', minute: '2-digit'});
+}
+
+function getPrefersDarkFromStorage(): boolean {
+  return localStorage.getItem(PREFERS_DARK_COLOR_SCHEME) === 'true' ? true : false;
+}
+
+function getPrefersTwelveHourFromStorage(): boolean {
+  return localStorage.getItem(PREFERS_TWELVE_HOUR) === 'true' ? true : false;
 }
 
 export interface FlowData {

@@ -11,10 +11,6 @@ import Summary from '../components/summary/Summary';
 const Home = () => {
   const { flowData, selectedIndex } = useData();
 
-  useEffect(() => {
-    toggleDarkTheme(isDarkModeDefault());
-  }, []);
-
   const graphView = (
     <div className='graph-content'>
       <IonContent scrollY={false} fullscreen><DailyFlowsContainer /></IonContent>
@@ -38,14 +34,6 @@ function Loading() {
       <IonText color='primary'>Fetching River Data</IonText>
     </div>
   );
-}
-
-export function toggleDarkTheme(enable: boolean) {
-  document.body.classList.toggle('dark', enable);
-}
-
-export function isDarkModeDefault(): boolean {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 export function isDarkModeEnabled(): boolean {

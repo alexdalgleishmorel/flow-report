@@ -2,7 +2,6 @@ import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic
 
 import { FlowData, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
-import { isDarkModeEnabled, toggleDarkTheme } from '../../pages/Home';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { useState } from 'react';
 
@@ -53,10 +52,9 @@ function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
 }
 
 export function Summary() {
-    const { flowData, stateUpdate, twelveHour, setSelectedIndex, setStateUpdate, setTwelveHour } = useData();
+    const { flowData, stateUpdate, darkMode, twelveHour, setSelectedIndex, setStateUpdate, setDarkMode, setTwelveHour } = useData();
     const handleThemeChange = (value: boolean) => {
-        toggleDarkTheme(value);
-        setStateUpdate(stateUpdate+1);
+        setDarkMode(value);
     };
     const handleTwelveHourChange = (value: boolean) => {
         setTwelveHour(value);
@@ -70,7 +68,7 @@ export function Summary() {
             <IonContent>
                 <div className='summary-footer'>
                     <div className="toggleContainer first">
-                        <IonToggle checked={isDarkModeEnabled()} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
+                        <IonToggle checked={darkMode} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
                         <div className='spacer'></div>
                         <IonText color='medium' className='title'>DARK</IonText>
                     </div>
