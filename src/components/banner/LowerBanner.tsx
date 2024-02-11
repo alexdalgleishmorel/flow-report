@@ -1,5 +1,5 @@
 import { IonText, IonIcon, IonRange, IonModal, IonContent, IonFooter, IonButton } from "@ionic/react";
-import { chevronBackOutline, chevronForwardOutline, homeOutline } from "ionicons/icons";
+import { arrowBackOutline, chevronBackOutline, chevronForwardOutline, homeOutline } from "ionicons/icons";
 
 import { useData } from "../../dataContext";
 import './LowerBanner.css';
@@ -45,7 +45,13 @@ function LowerBanner() {
                         </div>
                     </IonContent>
                     <IonFooter className="modal-footer">
-                        <IonButton shape="round" color='primary' onClick={() => modal.current?.dismiss()}>CLOSE</IonButton>
+                        <IonIcon 
+                            color='primary'
+                            size="large"
+                            icon={arrowBackOutline} 
+                            onClick={() => modal.current?.dismiss()}
+                        >
+                        </IonIcon>
                     </IonFooter>
                 </IonModal>
             </div>
