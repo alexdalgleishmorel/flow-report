@@ -154,7 +154,7 @@ export function DailyFlowsChart() {
                 position: 'right' as 'right',
                 title: {
                     display: true,
-                    text: 'Temperature'
+                    text: 'Temperature (°C)'
                 },
                 grid: { display: false },
                 display: true,
@@ -166,7 +166,7 @@ export function DailyFlowsChart() {
                 position: 'left' as 'left',
                 title: {
                     display: true,
-                    text: 'Volume'
+                    text: 'Volume (m³/s)'
                 },
                 grid: { display: false },
                 display: true,
