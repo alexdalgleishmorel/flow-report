@@ -189,7 +189,7 @@ export function DailyFlowsChart() {
                     generateLabels(chart: any): LegendItem[] {
                         return [
                             {
-                                text: 'Volume',
+                                text: 'Volume (m³/s)',
                                 datasetIndex: 1,
                                 fillStyle: getBlue('FF'),
                                 fontColor: getGrey('FF'),
@@ -197,7 +197,7 @@ export function DailyFlowsChart() {
                                 hidden: chart.getDatasetMeta(1).hidden
                             },
                             {
-                                text: 'Temperature',
+                                text: 'Temperature (°C)',
                                 datasetIndex: 0,
                                 fillStyle: getDark('AA'),
                                 fontColor: getGrey('FF'),
