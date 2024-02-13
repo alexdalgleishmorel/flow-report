@@ -1,11 +1,12 @@
 import { IonCardSubtitle, IonContent, IonFooter, IonIcon, IonModal, IonText } from '@ionic/react';
-
-import { FlowData, HomeViewType, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
-import './Summary.css';
 import { arrowBackOutline, chevronBackOutline, chevronForwardOutline, listOutline, optionsOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
 import { useRef, useState } from 'react';
+
+import { FlowData, HomeViewType, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleDailyFlowChart';
 import Config from './config/Config';
+
+import './Summary.css';
 
 interface FlowTimeRangeProps {
     flowTimeRanges: Date[][];

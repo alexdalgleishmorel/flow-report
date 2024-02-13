@@ -1,9 +1,9 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend, LegendItem, Plugin } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
+import { isDarkModeEnabled } from "../../../pages/Home";
 import { isNarrowLandscape, isNarrowWidth } from '../../../App';
 import { FlowDataPoint, getTimeString, useData } from "../../../dataContext";
-import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend);
