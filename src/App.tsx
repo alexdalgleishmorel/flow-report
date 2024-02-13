@@ -28,6 +28,7 @@ const WINDOW_WIDTH_LIMIT = 450;
 
 export const PREFERS_DARK_COLOR_SCHEME = 'PREFERS_DARK_COLOR_SCHEME';
 export const PREFERS_TWELVE_HOUR = 'PREFERS_TWELVE_HOUR';
+export const PREFERRED_FLOW_RATE = 'PREFERRED_FLOW_RATE';
 
 export function isNarrowLandscape(): boolean {
   return window.innerHeight < WINDOW_HEIGHT_LIMIT && window.matchMedia("(orientation: landscape)").matches;

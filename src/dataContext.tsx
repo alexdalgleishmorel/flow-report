@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import FLOW_DATA from './flowData.json';
 import WEATHER_DATA from './weatherData.json';
 import TIME_DATA from './timeData.json';
-import { PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
+import { PREFERRED_FLOW_RATE, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
 
 interface DataContextType {
   flowData: FlowData[];
@@ -32,7 +32,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   };
 
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [targetFlow, setTargetFlow] = useState<number>(30);
+  const [targetFlow, setTargetFlow] = useState<number>(getPreferredFlowFromStorage());
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
   const [darkMode, setDarkMode] = useState<boolean>(getDarkModePreference());
@@ -50,7 +50,8 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setDarkTheme(darkMode);
     localStorage.setItem(PREFERS_DARK_COLOR_SCHEME, String(darkMode));
     localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
-  }, [darkMode, twelveHour]);
+    localStorage.setItem(PREFERRED_FLOW_RATE, String(targetFlow));
+  }, [darkMode, twelveHour, targetFlow]);
 
   useEffect(() => {
     const updateOnHour = () => {
@@ -203,6 +204,11 @@ function getPrefersDarkFromStorage(): boolean {
 
 function getPrefersTwelveHourFromStorage(): boolean {
   return localStorage.getItem(PREFERS_TWELVE_HOUR) === 'true' ? true : false;
+}
+
+function getPreferredFlowFromStorage(): number {
+  const value = localStorage.getItem(PREFERRED_FLOW_RATE);
+  return value ? Number(value) : 30;
 }
 
 export interface FlowData {
