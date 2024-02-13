@@ -60,7 +60,7 @@ const paddingBelowLegendPlugin: Plugin =  {
 }
 
 export function DailyFlowsChart() {
-    const { flowData, targetFlow, selectedIndex, twelveHour } = useData();
+    const { flowData, historicalFlowData, targetFlow, selectedIndex, twelveHour } = useData();
     const data = flowData[selectedIndex];
 
     let today = new Date();
@@ -81,37 +81,50 @@ export function DailyFlowsChart() {
             dataPoint.volume < targetFlow;
     }
 
+    const temperatureDataset = {
+        type: 'line' as any,
+        label: 'Temperature',
+        data: data.dataPoints.map(dataPoint => dataPoint.temperature),
+        borderColor: getDark('AA'),
+        backgroundColor: getLightGrey('FF'),
+        yAxisID: 'temperature',
+        pointRadius: 1,
+        pointHitRadius: 10,
+        borderWidth: 1,
+        order: 0
+    };
+
+    const volumeDataset = {
+        label: 'Volume',
+        data: data.dataPoints.map(dataPoint => dataPoint.volume),
+        backgroundColor: data.dataPoints.map(dataPoint => {
+            if (isActiveFlow(dataPoint)) {
+                return getGreen('FF');
+            }
+            if (shouldGreyData(dataPoint)) {
+                return getLightGrey('AA');
+            }
+            return getBlue('FF');
+        }),
+        yAxisID: 'volume',
+        order: 1
+    };
+
+    const historicalDataset = {
+        label: 'Historical Volume',
+        data: data.dataPoints.map((_, index) => historicalFlowData.dataPoints[index]?.volume ? historicalFlowData.dataPoints[index]?.volume : undefined ),
+        backgroundColor: getLightBlue('33'),
+        yAxisID: 'historicalVolume',
+        order: 1
+    };
+
+    const standardDatasets = [temperatureDataset, volumeDataset];
+    const enhancedDatasets = [temperatureDataset, volumeDataset, historicalDataset];
+    const hasHistoricalData = data.day.toDateString() === historicalFlowData.day.toDateString();
+
     const chartData = {
         labels: data.dataPoints.map(dataPoint => dataPoint.hour),
-        datasets: [
-            {
-                type: 'line' as any,
-                label: 'Temperature',
-                data: data.dataPoints.map(dataPoint => dataPoint.temperature),
-                borderColor: getDark('AA'),
-                backgroundColor: getLightGrey('FF'),
-                yAxisID: 'temperature',
-                pointRadius: 1,
-                pointHitRadius: 10,
-                borderWidth: 1,
-                order: 0
-            },
-            {
-                label: 'Volume',
-                data: data.dataPoints.map(dataPoint => dataPoint.volume),
-                backgroundColor: data.dataPoints.map(dataPoint => {
-                    if (isActiveFlow(dataPoint)) {
-                        return getGreen('FF');
-                    }
-                    if (shouldGreyData(dataPoint)) {
-                        return getLightGrey('AA');
-                    }
-                    return getBlue('FF');
-                }),
-                yAxisID: 'volume',
-                order: 1
-            }
-        ]
+        datasets: hasHistoricalData ? enhancedDatasets : standardDatasets
     };
 
     const getTickerColor = (index: number): string => {
@@ -130,49 +143,63 @@ export function DailyFlowsChart() {
     const shouldBold = (index: number): boolean => {
         return isCurrentTime({ hour: index, volume: 0 }) || index === data.sunriseHour || index === data.sunsetHour;
     }
-    
-    const options = {
-        cubicInterpolationMode: 'monotone',
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                grid: { display: false },
-                ticks: {
-                    color: (data: any) => getTickerColor(data.index),
-                    font: {
-                        size: (data: any) => shouldBold(data.index) ? (isNarrowWidth() ? 6 : 12) : (isNarrowWidth() ? 6 : 8),
-                        weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
-                    },
-                    autoSkip: false,
-                    minRotation: 0,
-                    maxRotation: 0
+
+    const basicScaleOptions = {
+        x: {
+            grid: { display: false },
+            ticks: {
+                color: (data: any) => getTickerColor(data.index),
+                font: {
+                    size: (data: any) => shouldBold(data.index) ? (isNarrowWidth() ? 6 : 12) : (isNarrowWidth() ? 6 : 8),
+                    weight: (data: any) => shouldBold(data.index) ? 'bolder' as 'bolder' : 'normal' as 'normal',
                 },
+                autoSkip: false,
+                minRotation: 0,
+                maxRotation: 0
             },
-            temperature: {
-                position: 'right' as 'right',
-                title: {
-                    display: true,
-                    text: 'Temperature (°C)'
-                },
-                grid: { display: false },
+        },
+        temperature: {
+            position: 'right' as 'right',
+            title: {
                 display: true,
-                ticks: {
-                    color: () => getGrey('FF')
-                }
+                text: 'Temperature (°C)'
             },
-            volume: {
-                position: 'left' as 'left',
-                title: {
-                    display: true,
-                    text: 'Volume (m³/s)'
-                },
-                grid: { display: false },
-                display: true,
-                ticks: {
-                    color: () => getGrey('FF')
-                }
+            grid: { display: false },
+            display: true,
+            ticks: {
+                color: () => getGrey('FF')
             }
         },
+        volume: {
+            position: 'left' as 'left',
+            title: {
+                display: true,
+                text: 'Volume (m³/s)'
+            },
+            grid: { display: false },
+            display: true,
+            ticks: {
+                color: () => getGrey('FF')
+            }
+        }
+    };
+
+    const historicalScaleOptions = {
+        ...basicScaleOptions,
+        historicalVolume: {
+            title: {
+                display: false,
+            },
+            grid: { display: false },
+            display: false
+        }
+    };
+    
+    const options = {
+        skipNull: true,
+        cubicInterpolationMode: 'monotone',
+        maintainAspectRatio: false,
+        scales: hasHistoricalData ? historicalScaleOptions : basicScaleOptions,
         plugins: {
             title: {
                 display: true,
@@ -185,7 +212,7 @@ export function DailyFlowsChart() {
                     padding: 20,
                     usePointStyle: true,
                     generateLabels(chart: any): LegendItem[] {
-                        return [
+                        let labels: LegendItem[] = [
                             {
                                 text: 'Volume (m³/s)',
                                 datasetIndex: 1,
@@ -203,6 +230,19 @@ export function DailyFlowsChart() {
                                 hidden: chart.getDatasetMeta(0).hidden
                             }
                         ];
+                        // if (hasHistoricalData) {
+                        //     labels.push(
+                        //         {
+                        //             text: 'Recorded Volume (m³/s)',
+                        //             datasetIndex: 2,
+                        //             fillStyle: getLightBlue('33'),
+                        //             fontColor: getGrey('FF'),
+                        //             pointStyle: 'rect',
+                        //             hidden: chart.getDatasetMeta(2).hidden
+                        //         }
+                        //     );
+                        // }
+                        return labels;
                     }
                 }
             },
@@ -222,7 +262,10 @@ export function DailyFlowsChart() {
                         const yAxisID = labelData.dataset.yAxisID;
                         const temperature = data.dataPoints[labelData.dataIndex].temperature || 0;
                         if (yAxisID === 'volume') {
-                            return 'Volume: '.concat(labelData.raw).concat(' m³/s');
+                            return 'Forecast: '.concat(labelData.raw).concat(' m³/s');
+                        }
+                        if (yAxisID === 'historicalVolume') {
+                            return 'Recorded: '.concat(labelData.raw).concat(' m³/s');
                         }
                         return 'Temperature: '.concat(temperature.toString()).concat('°C');
                     }
@@ -261,6 +304,11 @@ function getGreen(alphaHex: string) {
 
 function getOrange(alphaHex: string) {
     const color = isDarkModeEnabled() ? '#FF8C00' : '#FF8C00';
+    return color.concat(alphaHex);
+}
+
+function getLightBlue(alphaHex: string) {
+    const color = isDarkModeEnabled() ? '#50C8FF' : '#3DC2ff';
     return color.concat(alphaHex);
 }
 
