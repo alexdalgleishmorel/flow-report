@@ -115,6 +115,7 @@ export function DailyFlowsChart() {
         data: data.dataPoints.map((_, index) => historicalFlowData.dataPoints[index]?.volume ? historicalFlowData.dataPoints[index]?.volume : undefined ),
         backgroundColor: getLightBlue('33'),
         yAxisID: 'historicalVolume',
+        barPercentage: 0.5, 
         order: 1
     };
 
