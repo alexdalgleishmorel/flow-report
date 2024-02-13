@@ -8,6 +8,46 @@ import './DailyFlowChart.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend);
 
+const valueOnTopPlugin: Plugin = {
+    id: 'valueOnTop',
+    afterDatasetsDraw: (chart: any, args: any, options: any) => {
+        if (chart.getDatasetMeta(1).hidden) {
+            return;
+        }
+
+        let ctx = chart.ctx;
+        ctx.textAlign = 'center';
+        const fontFamily = 'Arial';
+        let fontSize = 12;
+
+        chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
+            if (dataPoint) {
+                const bar = chart.getDatasetMeta(1).data[index];
+
+                let text = dataPoint.toString();
+                let textWidth;
+                let barWidth = bar.width;
+                do {
+                    ctx.font = `${fontSize}px ${fontFamily}`;
+                    textWidth = ctx.measureText(text).width;
+                    if (textWidth > barWidth) {
+                      fontSize -= 1;
+                    }
+                } while (textWidth > barWidth && fontSize > 0);
+            }
+        });
+  
+        chart.data.datasets[1].data.forEach((dataPoint: number, index: number) => {
+            if (dataPoint) {
+                ctx.fillStyle = getDark('AA');
+                const bar = chart.getDatasetMeta(1).data[index];
+                const position = bar.tooltipPosition();
+                ctx.fillText(dataPoint, position.x, position.y - (fontSize/2));
+            }
+        });
+    }
+};
+
 interface SimpleDailyFlowsChartProps {
     selectedIndex: number;
 }
@@ -22,10 +62,6 @@ export function SimpleDailyFlowsChart({ selectedIndex }: SimpleDailyFlowsChartPr
 
     const isCurrentTime = (dataPoint: FlowDataPoint): boolean => {
         return data.day.getTime() === today.getTime() && dataPoint.hour === currentHour;
-    };
-
-    const isActiveFlow = (dataPoint: FlowDataPoint): boolean => {
-        return isCurrentTime(dataPoint) && dataPoint.volume >= targetFlow;
     };
 
     const shouldGreyData = (dataPoint: FlowDataPoint): boolean => {
@@ -103,6 +139,7 @@ export function SimpleDailyFlowsChart({ selectedIndex }: SimpleDailyFlowsChartPr
             },
             volume: {
                 display: false,
+                max: 100,
             }
         },
         plugins: {
@@ -118,7 +155,7 @@ export function SimpleDailyFlowsChart({ selectedIndex }: SimpleDailyFlowsChartPr
         }
     };
 
-    return <Bar data={chartData} options={options} plugins={[]} />;
+    return <Bar data={chartData} options={options} plugins={[valueOnTopPlugin]} />;
 };
 
 function getBlue(alphaHex: string) {
