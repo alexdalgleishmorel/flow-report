@@ -1,19 +1,13 @@
-import { IonCardSubtitle, IonContent, IonIcon, IonSegment, IonSegmentButton, IonText, IonToggle } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic/react';
 
-import { FlowData, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
+import { FlowData, HomeViewType, calculateTargetDateRanges, getPreferredHomeViewFromStorage, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
-import { barChartOutline, chevronBackOutline, chevronForwardOutline, listOutline, squareOutline, squareSharp, statsChart } from 'ionicons/icons';
-import { useState } from 'react';
+import { chevronBackOutline, chevronForwardOutline, listOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
 import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleDailyFlowChart';
-import { isDarkModeEnabled } from '../../pages/Home';
 
 interface FlowTimeRangeProps {
     flowTimeRanges: Date[][];
-}
-
-enum HomeViewType {
-    SUMMARY = 'SUMMARY',
-    CHARTS = 'CHARTS'
 }
 
 function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
@@ -59,14 +53,20 @@ function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
 }
 
 export function Summary() {
-    const { flowData, targetFlow, darkMode, twelveHour, setSelectedIndex, setDarkMode, setTwelveHour } = useData();
-    const [homeViewType, setHomeViewType] = useState<HomeViewType>(HomeViewType.SUMMARY);
+    const { flowData, targetFlow, darkMode, twelveHour, homeViewType, setSelectedIndex, setDarkMode, setTwelveHour, setHomeViewType, setInitialized } = useData();
     const handleThemeChange = (value: boolean) => {
         setDarkMode(value);
     };
     const handleTwelveHourChange = (value: boolean) => {
         setTwelveHour(value);
     };
+    const toggleHomeView = () => {
+        setHomeViewType(homeViewType === HomeViewType.SUMMARY ? HomeViewType.CHARTS : HomeViewType.SUMMARY);
+    }
+    useEffect(() => {
+        setInitialized(true);
+        setHomeViewType(getPreferredHomeViewFromStorage());
+    }, []);
     const dailyPeakFlowTimeRanges: Date[][][] = [];
     flowData.forEach(data => {
         dailyPeakFlowTimeRanges.push(calculateTargetDateRanges(getPeakFlow(data), data));
@@ -111,10 +111,15 @@ export function Summary() {
         <div className='summary-screen-content'>
             <IonContent>
                 <div className='summary-footer'>
-                    <div className="toggleContainer first">
-                        <IonToggle checked={darkMode} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
-                        <div className='spacer'></div>
-                        <IonText color='medium' className='title'>DARK</IonText>
+                    <div className='titleValueStacked first'>
+                        <IonIcon
+                            size='large'
+                            color='primary'
+                            icon={homeViewType === HomeViewType.SUMMARY ? statsChartOutline : listOutline}
+                            onClick={toggleHomeView}
+                        >
+                        </IonIcon>
+                        <IonText color='medium' className='title'>VIEW</IonText>
                     </div>
                     <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
                     <div className="toggleContainer last">
@@ -122,15 +127,12 @@ export function Summary() {
                         <div className='spacer'></div>
                         <IonText color='medium' className='title'>12 HR</IonText>
                     </div>
+                    <div className="toggleContainer last">
+                        <IonToggle checked={darkMode} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
+                        <div className='spacer'></div>
+                        <IonText color='medium' className='title'>DARK</IonText>
+                    </div>
                 </div>
-                <IonSegment mode='ios' value={homeViewType}>
-                    <IonSegmentButton value={HomeViewType.SUMMARY} onClick={() => setHomeViewType(HomeViewType.SUMMARY)}>
-                        <IonIcon icon={listOutline}></IonIcon>
-                    </IonSegmentButton>
-                    <IonSegmentButton value={HomeViewType.CHARTS} onClick={() => setHomeViewType(HomeViewType.CHARTS)}>
-                        <IonIcon icon={statsChart}></IonIcon>
-                    </IonSegmentButton>
-                </IonSegment>
                 <div className='tiny-spacer'></div>
                 {homeViewType === HomeViewType.SUMMARY && <div>{summaryView}</div>}
                 {homeViewType === HomeViewType.CHARTS && <div>{chartView}</div>}
