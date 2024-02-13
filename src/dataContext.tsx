@@ -2,6 +2,7 @@ import { debounce } from 'lodash';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 import FLOW_DATA from './flowData.json';
+import HISTORICAL_FLOW_DATA from './historicalFlowData.json';
 import WEATHER_DATA from './weatherData.json';
 import TIME_DATA from './timeData.json';
 import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
@@ -14,6 +15,7 @@ export enum HomeViewType {
 interface DataContextType {
   flowData: FlowData[];
   setFlowData: (data: FlowData[]) => void;
+  historicalFlowData: FlowData;
   targetFlow: number;
   setTargetFlow: (targetFlow: number) => void;
   selectedIndex: number;
@@ -39,6 +41,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   };
 
   const [flowData, setFlowData] = useState<FlowData[]>([]);
+  const [historicalFlowData] = useState<FlowData>(processHistoricalFlowData());
   const [targetFlow, setTargetFlow] = useState<number>(getPreferredFlowFromStorage());
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
@@ -102,7 +105,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType, historicalFlowData }}>
       {children}
     </FlowDataContext.Provider>
   );
@@ -192,6 +195,34 @@ export function calculateTargetDateRanges(targetFlow: number, flowData: FlowData
   return ranges;
 }
 
+function processHistoricalFlowData(): FlowData {
+  try {
+    const readings = JSON.parse(HISTORICAL_FLOW_DATA)[0].data as Array<[string, number, number, number, number]>;
+
+    const lastEntry = readings[readings.length - 1];
+    const mostRecentDate = lastEntry[0].split(" ")[0];
+
+    let dataPoints: FlowDataPoint[] = [];
+
+    for (let i = readings.length-1; i > 0; i --) {
+      const [timestamp, level, outflow] = readings[i];
+      const dateString = timestamp.split(" ")[0];
+      if (dateString !== mostRecentDate) {
+        break
+      }
+      const date: Date = new Date(timestamp);
+      dataPoints.push({ hour: date.getHours()+1, volume: Number(outflow) });
+    }
+
+    dataPoints.reverse();
+    dataPoints = dataPoints.slice(1);
+
+    return { day: new Date(mostRecentDate + 'T00:00:00'), dataPoints: dataPoints };
+  } catch {
+    return { day: new Date(), dataPoints: [] };
+  }
+}
+
 export function isUpcomingTargetDateRange(dateRange: Date[]): boolean {
   return Date.now() < dateRange[0]?.getTime();
 }
@@ -218,12 +249,12 @@ function getPrefersTwelveHourFromStorage(): boolean {
 
 function getPreferredFlowFromStorage(): number {
   const value = localStorage.getItem(PREFERRED_FLOW_RATE);
-  return value ? Number(value) : 30;
+  return value ? Number(value) : 25;
 }
 
 export function getPreferredHomeViewFromStorage(): HomeViewType {
   const value = localStorage.getItem(PREFERRED_HOME_VIEW);
-  return value ? (value === HomeViewType.CHARTS ? HomeViewType.CHARTS : HomeViewType.SUMMARY) : HomeViewType.SUMMARY;
+  return value ? (value === HomeViewType.SUMMARY ? HomeViewType.SUMMARY : HomeViewType.CHARTS) : HomeViewType.CHARTS;
 }
 
 export interface FlowData {
