@@ -5,7 +5,7 @@ import { isNarrowLandscape, isNarrowWidth } from '../../../App';
 import { FlowDataPoint, getTimeString, useData } from "../../../dataContext";
 import { isDarkModeEnabled } from "../../../pages/Home";
 import './DailyFlowChart.css';
-  
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, LineController, PointElement, Title, Tooltip, Legend);
 
 const valueOnTopPlugin: Plugin = {
@@ -58,8 +58,6 @@ const paddingBelowLegendPlugin: Plugin =  {
         }
     }
 }
-
-ChartJS.register(valueOnTopPlugin, paddingBelowLegendPlugin);
 
 export function DailyFlowsChart() {
     const { flowData, targetFlow, selectedIndex, twelveHour } = useData();
@@ -233,7 +231,7 @@ export function DailyFlowsChart() {
         }
     };
 
-    return <Bar data={chartData} options={options} />;
+    return <Bar data={chartData} options={options} plugins={[paddingBelowLegendPlugin, valueOnTopPlugin]} />;
 };
 
 function getBlue(alphaHex: string) {

@@ -92,10 +92,33 @@
     font-size: 80%;
 }
 
+.tiny-spacer {
+    padding: 2px;
+}
+
 .small-spacer {
     padding: 5px;
 }
 
 .spacer {
     padding: 10px;
+}
+
+.simple-chart-container {
+    width: 100%;
+    max-height: 50%;
+}
+
+.chart-view-message {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 50%;
+}
+
+ion-segment {
+    transform: scale(0.75);
 }
