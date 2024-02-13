@@ -1,0 +1,19 @@
+.configurations-container {
+    height: 100%;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.config-item-title {
+    font-size: 75%;
+}
+
+.spacer {
+    padding: 10px;
+}
