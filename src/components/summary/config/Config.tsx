@@ -1,15 +1,14 @@
-import { IonText, IonIcon, IonRange, IonModal, IonContent, IonFooter, IonToggle, IonCardSubtitle } from "@ionic/react";
-import { arrowBackOutline } from "ionicons/icons";
+import { IonText, IonRange, IonContent, IonToggle, IonCardSubtitle } from "@ionic/react";
 
 import { useData } from "../../../dataContext";
 import './Config.css';
-import { useRef } from "react";
 
 const MINIMUM_FLOW_RATE = 25;
 const MAXIMUM_FLOW_RATE = 35;
 
 function Config() {
     const { targetFlow, darkMode, twelveHour, setTargetFlow, setDarkMode, setTwelveHour } = useData();
+
     const handleSliderChange = (value: number) => {
         value = !value ? 1 : value;
         if (value !== targetFlow) {
@@ -22,6 +21,7 @@ function Config() {
     const handleTwelveHourChange = (value: boolean) => {
         setTwelveHour(value);
     };
+
     return (
         <div className="configurations-container">
             <IonContent>
