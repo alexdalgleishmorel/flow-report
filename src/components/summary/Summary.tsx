@@ -121,6 +121,7 @@ export function Summary() {
                         </IonIcon>
                         <IonText color='medium' className='title'>VIEW</IonText>
                     </div>
+                    <div className='spacer'></div>
                     <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
                     <div className="toggleContainer last">
                         <IonToggle checked={twelveHour} onIonChange={event => handleTwelveHourChange(event.detail.checked)}></IonToggle>
