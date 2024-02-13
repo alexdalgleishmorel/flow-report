@@ -1,9 +1,9 @@
 import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic/react';
 
-import { FlowData, HomeViewType, calculateTargetDateRanges, getPreferredHomeViewFromStorage, getTimeString, useData } from '../../dataContext';
+import { FlowData, HomeViewType, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
 import { chevronBackOutline, chevronForwardOutline, listOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleDailyFlowChart';
 
 interface FlowTimeRangeProps {
@@ -53,7 +53,8 @@ function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
 }
 
 export function Summary() {
-    const { flowData, targetFlow, darkMode, twelveHour, homeViewType, setSelectedIndex, setDarkMode, setTwelveHour, setHomeViewType, setInitialized } = useData();
+    const { flowData, targetFlow, darkMode, twelveHour, homeViewType, setSelectedIndex, setDarkMode, setTwelveHour, setHomeViewType } = useData();
+
     const handleThemeChange = (value: boolean) => {
         setDarkMode(value);
     };
@@ -63,10 +64,7 @@ export function Summary() {
     const toggleHomeView = () => {
         setHomeViewType(homeViewType === HomeViewType.SUMMARY ? HomeViewType.CHARTS : HomeViewType.SUMMARY);
     }
-    useEffect(() => {
-        setInitialized(true);
-        setHomeViewType(getPreferredHomeViewFromStorage());
-    }, []);
+
     const dailyPeakFlowTimeRanges: Date[][][] = [];
     flowData.forEach(data => {
         dailyPeakFlowTimeRanges.push(calculateTargetDateRanges(getPeakFlow(data), data));

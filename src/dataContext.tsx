@@ -26,8 +26,6 @@ interface DataContextType {
   setTwelveHour: (state: boolean) => void;
   homeViewType: HomeViewType;
   setHomeViewType: (type: HomeViewType) => void;
-  initialized: boolean;
-  setInitialized: (state: boolean) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
@@ -46,8 +44,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [stateUpdate, setStateUpdate] = useState<number>(0);
   const [darkMode, setDarkMode] = useState<boolean>(getDarkModePreference());
   const [twelveHour, setTwelveHour] = useState<boolean>(getTwelveHourPreference());
-  const [homeViewType, setHomeViewType] = useState<HomeViewType>(HomeViewType.SUMMARY);
-  const [initialized, setInitialized] = useState<boolean>(false);
+  const [homeViewType, setHomeViewType] = useState<HomeViewType>(getPreferredHomeViewFromStorage());
 
   useEffect(() => {
     setFlowData(processFlowData(FLOW_DATA, WEATHER_DATA));
@@ -62,9 +59,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     localStorage.setItem(PREFERS_DARK_COLOR_SCHEME, String(darkMode));
     localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
     localStorage.setItem(PREFERRED_FLOW_RATE, String(targetFlow));
-    if (initialized) {
-      localStorage.setItem(PREFERRED_HOME_VIEW, homeViewType);
-    }
+    localStorage.setItem(PREFERRED_HOME_VIEW, homeViewType);
   }, [darkMode, twelveHour, targetFlow, homeViewType]);
 
   useEffect(() => {
@@ -106,7 +101,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType, initialized, setInitialized }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType }}>
       {children}
     </FlowDataContext.Provider>
   );
