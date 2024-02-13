@@ -249,12 +249,12 @@ function getPrefersTwelveHourFromStorage(): boolean {
 
 function getPreferredFlowFromStorage(): number {
   const value = localStorage.getItem(PREFERRED_FLOW_RATE);
-  return value ? Number(value) : 30;
+  return value ? Number(value) : 25;
 }
 
 export function getPreferredHomeViewFromStorage(): HomeViewType {
   const value = localStorage.getItem(PREFERRED_HOME_VIEW);
-  return value ? (value === HomeViewType.CHARTS ? HomeViewType.CHARTS : HomeViewType.SUMMARY) : HomeViewType.SUMMARY;
+  return value ? (value === HomeViewType.SUMMARY ? HomeViewType.SUMMARY : HomeViewType.CHARTS) : HomeViewType.CHARTS;
 }
 
 export interface FlowData {
