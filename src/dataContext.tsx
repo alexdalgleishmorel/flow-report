@@ -60,6 +60,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
     localStorage.setItem(PREFERRED_FLOW_RATE, String(targetFlow));
     localStorage.setItem(PREFERRED_HOME_VIEW, homeViewType);
+    setStateUpdate(stateUpdate+1);
   }, [darkMode, twelveHour, targetFlow, homeViewType]);
 
   useEffect(() => {
