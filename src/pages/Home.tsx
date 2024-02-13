@@ -1,12 +1,11 @@
-import { IonContent, IonFooter, IonHeader, IonPage, IonSpinner, IonText } from '@ionic/react';
-import { useEffect } from 'react';
+import { IonContent, IonFooter, IonPage, IonSpinner, IonText } from '@ionic/react';
 
 import LowerBanner from '../components/banner/LowerBanner';
 import DailyFlowsContainer from '../components/dailyFlowsContainer/DailyFlowsContainer';
 import { useData } from '../dataContext';
-import './Home.css';
 import Summary from '../components/summary/Summary';
 
+import './Home.css';
 
 const Home = () => {
   const { flowData, selectedIndex } = useData();

@@ -1,22 +1,24 @@
-import { IonText, IonIcon, IonRange, IonModal, IonContent, IonFooter, IonButton } from "@ionic/react";
+import { IonText, IonIcon, IonRange, IonModal, IonContent, IonFooter } from "@ionic/react";
 import { arrowBackOutline, chevronBackOutline, chevronForwardOutline, homeOutline } from "ionicons/icons";
+import { useRef } from "react";
 
 import { useData } from "../../dataContext";
 import './LowerBanner.css';
-import { useRef } from "react";
 
 const MINIMUM_FLOW_RATE = 25;
 const MAXIMUM_FLOW_RATE = 35;
 
 function LowerBanner() {
-    const { flowData, targetFlow, selectedIndex, stateUpdate, setTargetFlow, setSelectedIndex, setStateUpdate } = useData();
+    const { flowData, targetFlow, selectedIndex, stateUpdate, setTargetFlow, setSelectedIndex } = useData();
+    const modal = useRef<HTMLIonModalElement>(null);
+
     const handleSliderChange = (value: number) => {
         value = !value ? 1 : value;
         if (value !== targetFlow) {
             setTargetFlow(value);
         }
     };
-    const modal = useRef<HTMLIonModalElement>(null);
+
     return (
         <div className='bannerContainer'>
             <div className='titleValueStacked first'>
