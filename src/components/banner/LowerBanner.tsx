@@ -40,7 +40,7 @@ function LowerBanner() {
                                 <IonRange value={targetFlow} min={MINIMUM_FLOW_RATE} max={MAXIMUM_FLOW_RATE} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                             </div>
                             <IonText className="modal-description" color='medium'>
-                                Current or future flows that meet this rate will be highlighted.
+                                Flows that meet this rate will be highlighted.
                             </IonText>
                         </div>
                     </IonContent>

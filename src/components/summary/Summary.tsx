@@ -1,10 +1,11 @@
-import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonFooter, IonIcon, IonModal, IonText } from '@ionic/react';
 
 import { FlowData, HomeViewType, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
-import { chevronBackOutline, chevronForwardOutline, listOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { arrowBackOutline, chevronBackOutline, chevronForwardOutline, listOutline, optionsOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
+import { useRef, useState } from 'react';
 import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleDailyFlowChart';
+import Config from './config/Config';
 
 interface FlowTimeRangeProps {
     flowTimeRanges: Date[][];
@@ -53,14 +54,8 @@ function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
 }
 
 export function Summary() {
-    const { flowData, targetFlow, darkMode, twelveHour, homeViewType, setSelectedIndex, setDarkMode, setTwelveHour, setHomeViewType } = useData();
+    const { flowData, targetFlow, homeViewType, setSelectedIndex, setHomeViewType } = useData();
 
-    const handleThemeChange = (value: boolean) => {
-        setDarkMode(value);
-    };
-    const handleTwelveHourChange = (value: boolean) => {
-        setTwelveHour(value);
-    };
     const toggleHomeView = () => {
         setHomeViewType(homeViewType === HomeViewType.SUMMARY ? HomeViewType.CHARTS : HomeViewType.SUMMARY);
     }
@@ -105,6 +100,7 @@ export function Summary() {
             </div>
         </div>
     ));
+    const modal = useRef<HTMLIonModalElement>(null);
     return (
         <div className='summary-screen-content'>
             <IonContent>
@@ -121,18 +117,33 @@ export function Summary() {
                     </div>
                     <div className='spacer'></div>
                     <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
-                    <div className="toggleContainer last">
-                        <IonToggle checked={twelveHour} onIonChange={event => handleTwelveHourChange(event.detail.checked)}></IonToggle>
-                        <div className='spacer'></div>
-                        <IonText color='medium' className='title'>12 HR</IonText>
+                    <div className='spacer'></div>
+                    <div className='titleValueStacked last' id='open-config-modal'>
+                        <IonIcon
+                            size='large'
+                            color='primary'
+                            icon={optionsOutline}
+                            
+                        >
+                        </IonIcon>
+                        <IonText color='medium' className='title'>CONFIG</IonText>
                     </div>
-                    <div className="toggleContainer last">
-                        <IonToggle checked={darkMode} onIonChange={event => handleThemeChange(event.detail.checked)}></IonToggle>
-                        <div className='spacer'></div>
-                        <IonText color='medium' className='title'>DARK</IonText>
-                    </div>
+                    <IonModal ref={modal} trigger="open-config-modal">
+                        <IonContent>
+                            <Config></Config>
+                        </IonContent>
+                        <IonFooter className="modal-footer">
+                            <IonIcon 
+                                color='primary'
+                                size="large"
+                                icon={arrowBackOutline} 
+                                onClick={() => modal.current?.dismiss()}
+                            >
+                            </IonIcon>
+                        </IonFooter>
+                    </IonModal>
                 </div>
-                <div className='tiny-spacer'></div>
+                <div className='small-spacer'></div>
                 {homeViewType === HomeViewType.SUMMARY && <div>{summaryView}</div>}
                 {homeViewType === HomeViewType.CHARTS && <div>{chartView}</div>}
             </IonContent>
