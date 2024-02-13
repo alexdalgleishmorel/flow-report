@@ -4,7 +4,12 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import FLOW_DATA from './flowData.json';
 import WEATHER_DATA from './weatherData.json';
 import TIME_DATA from './timeData.json';
-import { PREFERRED_FLOW_RATE, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
+import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
+
+export enum HomeViewType {
+  SUMMARY = 'SUMMARY',
+  CHARTS = 'CHARTS'
+}
 
 interface DataContextType {
   flowData: FlowData[];
@@ -19,6 +24,10 @@ interface DataContextType {
   setDarkMode: (state: boolean) => void;
   twelveHour: boolean;
   setTwelveHour: (state: boolean) => void;
+  homeViewType: HomeViewType;
+  setHomeViewType: (type: HomeViewType) => void;
+  initialized: boolean;
+  setInitialized: (state: boolean) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
@@ -37,6 +46,8 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [stateUpdate, setStateUpdate] = useState<number>(0);
   const [darkMode, setDarkMode] = useState<boolean>(getDarkModePreference());
   const [twelveHour, setTwelveHour] = useState<boolean>(getTwelveHourPreference());
+  const [homeViewType, setHomeViewType] = useState<HomeViewType>(HomeViewType.SUMMARY);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     setFlowData(processFlowData(FLOW_DATA, WEATHER_DATA));
@@ -51,7 +62,10 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     localStorage.setItem(PREFERS_DARK_COLOR_SCHEME, String(darkMode));
     localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
     localStorage.setItem(PREFERRED_FLOW_RATE, String(targetFlow));
-  }, [darkMode, twelveHour, targetFlow]);
+    if (initialized) {
+      localStorage.setItem(PREFERRED_HOME_VIEW, homeViewType);
+    }
+  }, [darkMode, twelveHour, targetFlow, homeViewType]);
 
   useEffect(() => {
     const updateOnHour = () => {
@@ -92,7 +106,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType, initialized, setInitialized }}>
       {children}
     </FlowDataContext.Provider>
   );
@@ -209,6 +223,11 @@ function getPrefersTwelveHourFromStorage(): boolean {
 function getPreferredFlowFromStorage(): number {
   const value = localStorage.getItem(PREFERRED_FLOW_RATE);
   return value ? Number(value) : 30;
+}
+
+export function getPreferredHomeViewFromStorage(): HomeViewType {
+  const value = localStorage.getItem(PREFERRED_HOME_VIEW);
+  return value ? (value === HomeViewType.CHARTS ? HomeViewType.CHARTS : HomeViewType.SUMMARY) : HomeViewType.SUMMARY;
 }
 
 export interface FlowData {
