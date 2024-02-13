@@ -2,7 +2,7 @@ name: Fetch, Build, and Deploy
 
 on:
   schedule:
-    - cron: '0 11 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,6 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '21'
+
+      - name: Checkout to production branch
+        run: |
+          git fetch
+          git checkout production
       
       - name: Fetch data from TransAlta API and Weather API
         run: |
