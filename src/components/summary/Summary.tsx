@@ -1,12 +1,19 @@
-import { IonCardSubtitle, IonContent, IonIcon, IonText, IonToggle } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonIcon, IonSegment, IonSegmentButton, IonText, IonToggle } from '@ionic/react';
 
 import { FlowData, calculateTargetDateRanges, getTimeString, useData } from '../../dataContext';
 import './Summary.css';
-import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { barChartOutline, chevronBackOutline, chevronForwardOutline, listOutline, squareOutline, squareSharp, statsChart } from 'ionicons/icons';
 import { useState } from 'react';
+import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleDailyFlowChart';
+import { isDarkModeEnabled } from '../../pages/Home';
 
 interface FlowTimeRangeProps {
     flowTimeRanges: Date[][];
+}
+
+enum HomeViewType {
+    SUMMARY = 'SUMMARY',
+    CHARTS = 'CHARTS'
 }
 
 function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
@@ -52,7 +59,8 @@ function FlowTimeRange({flowTimeRanges}: FlowTimeRangeProps) {
 }
 
 export function Summary() {
-    const { flowData, stateUpdate, darkMode, twelveHour, setSelectedIndex, setStateUpdate, setDarkMode, setTwelveHour } = useData();
+    const { flowData, targetFlow, darkMode, twelveHour, setSelectedIndex, setDarkMode, setTwelveHour } = useData();
+    const [homeViewType, setHomeViewType] = useState<HomeViewType>(HomeViewType.SUMMARY);
     const handleThemeChange = (value: boolean) => {
         setDarkMode(value);
     };
@@ -63,6 +71,42 @@ export function Summary() {
     flowData.forEach(data => {
         dailyPeakFlowTimeRanges.push(calculateTargetDateRanges(getPeakFlow(data), data));
     });
+    const summaryView = flowData.map((item, index) => (
+        <div 
+            key={item.day.toString()}
+            className={`item-container ${index === flowData.length - 1 ? 'isLast' : ''}`}
+            onClick={() => setSelectedIndex(index)}
+        >
+            <div className='item-content'>
+                <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
+                <div className='titleValueStacked'>
+                    <IonText className='title' color='medium'>PEAK FLOW</IonText>
+                    <IonText color='primary'><b>{getPeakFlow(item)} m³/s</b></IonText>
+                </div>
+                <FlowTimeRange flowTimeRanges={dailyPeakFlowTimeRanges[index]}></FlowTimeRange>
+            </div>
+        </div>
+    ));
+    const chartView = flowData.map((item, index) => (
+        <div 
+            key={item.day.toString()}
+            className={`item-container chart ${index === flowData.length - 1 ? 'isLast' : ''}`}
+            onClick={() => setSelectedIndex(index)}
+        >
+            <div className='item-content'>
+                <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
+                <div className='tiny-spacer'></div>
+                <div color='medium' className='chart-view-message'>
+                    <IonIcon icon={squareSharp} color='primary'></IonIcon>
+                    &nbsp;
+                    <IonText color='medium'>At least {targetFlow} m³/s</IonText>
+                </div>
+                <div className='simple-chart-container'>
+                    <SimpleDailyFlowsChart selectedIndex={index}></SimpleDailyFlowsChart>
+                </div>
+            </div>
+        </div>
+    ));
     return (
         <div className='summary-screen-content'>
             <IonContent>
@@ -79,23 +123,17 @@ export function Summary() {
                         <IonText color='medium' className='title'>12 HR</IonText>
                     </div>
                 </div>
-                <div className='spacer'></div>
-                {flowData.map((item, index) => (
-                    <div 
-                        key={item.day.toString()}
-                        className={`item-container ${index === flowData.length - 1 ? 'isLast' : ''}`}
-                        onClick={() => setSelectedIndex(index)}
-                    >
-                        <div className='item-content'>
-                            <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
-                            <div className='titleValueStacked'>
-                                <IonText className='title' color='medium'>PEAK FLOW</IonText>
-                                <IonText color='primary'><b>{getPeakFlow(item)} m³/s</b></IonText>
-                            </div>
-                            <FlowTimeRange flowTimeRanges={dailyPeakFlowTimeRanges[index]}></FlowTimeRange>
-                        </div>
-                    </div>
-                ))}
+                <IonSegment mode='ios' value={homeViewType}>
+                    <IonSegmentButton value={HomeViewType.SUMMARY} onClick={() => setHomeViewType(HomeViewType.SUMMARY)}>
+                        <IonIcon icon={listOutline}></IonIcon>
+                    </IonSegmentButton>
+                    <IonSegmentButton value={HomeViewType.CHARTS} onClick={() => setHomeViewType(HomeViewType.CHARTS)}>
+                        <IonIcon icon={statsChart}></IonIcon>
+                    </IonSegmentButton>
+                </IonSegment>
+                <div className='tiny-spacer'></div>
+                {homeViewType === HomeViewType.SUMMARY && <div>{summaryView}</div>}
+                {homeViewType === HomeViewType.CHARTS && <div>{chartView}</div>}
             </IonContent>
         </div>
     );
