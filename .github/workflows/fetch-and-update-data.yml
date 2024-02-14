@@ -28,7 +28,7 @@ jobs:
           curl 'https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow' > ./src/flowData.json
           curl 'https://api.open-meteo.com/v1/forecast?latitude=51.051798892149094&longitude=-115.0190595210664&hourly=temperature_2m&daily=sunrise,sunset&timezone=America%2FDenver' > ./src/weatherData.json
           curl 'http://worldtimeapi.org/api/timezone/America/Edmonton' > ./src/timeData.json
-          curl -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords --data stationNumber=05BF024&stationType=L&dataType=HG' > ./src/historicalFlowData.json
+          curl -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords' --data 'stationNumber=05BF024&stationType=L&dataType=HG' > ./src/historicalFlowData.json
       
       - name: Commit and push if there are changes
         run: |
