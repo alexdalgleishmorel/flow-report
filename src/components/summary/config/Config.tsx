@@ -46,13 +46,13 @@ function Config() {
                 </div>
                 <div className="item-container isLast">
                     <div className="item-content">
-                        <IonCardSubtitle class='config-item-title' color='dark'>Minimum Flow Rate</IonCardSubtitle>
+                        <IonCardSubtitle class='config-item-title' color='dark'>Preferred Flow Rate</IonCardSubtitle>
                         <IonText color='primary'><b>{targetFlow} m³/s</b></IonText>
                         <div className="rangeContainer">
                             <IonRange value={targetFlow} min={MINIMUM_FLOW_RATE} max={MAXIMUM_FLOW_RATE} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                         </div>
                         <IonText className="modal-description" color='medium'>
-                            Flows that meet this rate will be highlighted.
+                            Flows that meet or exceed this rate will be highlighted.
                         </IonText>
                     </div>
                 </div>
