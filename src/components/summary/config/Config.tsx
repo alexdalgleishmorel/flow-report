@@ -25,6 +25,8 @@ function Config() {
     return (
         <div className="configurations-container">
             <IonContent>
+                <div className='main-title'><IonText><b>Configurations</b></IonText></div>
+                <div className="spacer"></div>
                 <div className="row">
                     <div className="item-container">
                         <div className="item-content">

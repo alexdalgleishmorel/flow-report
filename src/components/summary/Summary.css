@@ -56,47 +56,6 @@
     }
 }
 
-.toggleContainer {
-    max-width: 56px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    padding: 10px;
-
-    .title {
-        text-align: center;
-        font-size: 50%;
-    }
-
-    .first {
-        padding-right: 20px;
-        flex: 0 1 auto;
-    }
-
-    .middle {
-        flex: 1;
-    }
-
-    .last {
-        padding-left: 20px;
-        flex: 0 1 auto;
-    }
-
-    .spacer {
-        padding: 1px;
-    }
-
-    ion-toggle {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transform: scale(0.5);
-    }
-}
-
 .summary-footer {
     display: flex;
     flex-direction: row;
