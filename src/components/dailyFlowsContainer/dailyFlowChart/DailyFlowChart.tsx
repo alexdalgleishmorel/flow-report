@@ -235,7 +235,7 @@ export function DailyFlowsChart() {
                     label: (labelData: any) => {
                         const yAxisID = labelData.dataset.yAxisID;
                         const temperature = data.dataPoints[labelData.dataIndex].temperature || 0;
-                        if (hasHistoricalData && historicalFlowData.dataPoints[labelData.dataIndex]) {
+                        if (yAxisID === 'volume' && hasHistoricalData && historicalFlowData.dataPoints[labelData.dataIndex]) {
                             return 'Recorded: '.concat(labelData.raw).concat(' m³/s');
                         }
                         if (yAxisID === 'volume') {
