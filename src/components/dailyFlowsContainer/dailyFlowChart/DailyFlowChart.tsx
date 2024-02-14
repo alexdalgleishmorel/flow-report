@@ -24,7 +24,7 @@ const valueOnTopPlugin: Plugin = {
             if (dataPoint) {
                 const bar = chart.getDatasetMeta(1).data[index];
 
-                let text = dataPoint.toString();
+                let text = Math.round(dataPoint).toString();
                 let textWidth;
                 let barWidth = bar.width;
                 do {
@@ -42,7 +42,7 @@ const valueOnTopPlugin: Plugin = {
                 ctx.fillStyle = getDark('AA');
                 const bar = chart.getDatasetMeta(1).data[index];
                 const position = bar.tooltipPosition();
-                ctx.fillText(dataPoint, position.x, position.y - fontSize);
+                ctx.fillText(Math.round(dataPoint), position.x, position.y - fontSize);
             }
         });
     }
@@ -94,9 +94,16 @@ export function DailyFlowsChart() {
         order: 0
     };
 
+    const hasHistoricalData = data.day.toDateString() === historicalFlowData.day.toDateString();
+
     const volumeDataset = {
         label: 'Volume',
-        data: data.dataPoints.map(dataPoint => dataPoint.volume),
+        data: data.dataPoints.map((dataPoint, index) => {
+            if (hasHistoricalData && historicalFlowData.dataPoints[index]) {
+                return historicalFlowData.dataPoints[index].volume;
+            }
+            return dataPoint.volume;
+        }),
         backgroundColor: data.dataPoints.map(dataPoint => {
             if (isActiveFlow(dataPoint)) {
                 return getGreen('FF');
@@ -110,22 +117,11 @@ export function DailyFlowsChart() {
         order: 1
     };
 
-    const historicalDataset = {
-        label: 'Historical Volume',
-        data: data.dataPoints.map((_, index) => historicalFlowData.dataPoints[index]?.volume ? historicalFlowData.dataPoints[index]?.volume : undefined ),
-        backgroundColor: getLightBlue('33'),
-        yAxisID: 'historicalVolume',
-        barPercentage: 0.5, 
-        order: 1
-    };
-
     const standardDatasets = [temperatureDataset, volumeDataset];
-    const enhancedDatasets = [temperatureDataset, volumeDataset, historicalDataset];
-    const hasHistoricalData = data.day.toDateString() === historicalFlowData.day.toDateString();
 
     const chartData = {
         labels: data.dataPoints.map(dataPoint => dataPoint.hour),
-        datasets: hasHistoricalData ? enhancedDatasets : standardDatasets
+        datasets: standardDatasets
     };
 
     const getTickerColor = (index: number): string => {
@@ -184,23 +180,12 @@ export function DailyFlowsChart() {
             }
         }
     };
-
-    const historicalScaleOptions = {
-        ...basicScaleOptions,
-        historicalVolume: {
-            title: {
-                display: false,
-            },
-            grid: { display: false },
-            display: false
-        }
-    };
     
     const options = {
         skipNull: true,
         cubicInterpolationMode: 'monotone',
         maintainAspectRatio: false,
-        scales: hasHistoricalData ? historicalScaleOptions : basicScaleOptions,
+        scales: basicScaleOptions,
         plugins: {
             title: {
                 display: true,
@@ -231,18 +216,6 @@ export function DailyFlowsChart() {
                                 hidden: chart.getDatasetMeta(0).hidden
                             }
                         ];
-                        // if (hasHistoricalData) {
-                        //     labels.push(
-                        //         {
-                        //             text: 'Recorded Volume (m³/s)',
-                        //             datasetIndex: 2,
-                        //             fillStyle: getLightBlue('33'),
-                        //             fontColor: getGrey('FF'),
-                        //             pointStyle: 'rect',
-                        //             hidden: chart.getDatasetMeta(2).hidden
-                        //         }
-                        //     );
-                        // }
                         return labels;
                     }
                 }
@@ -262,11 +235,11 @@ export function DailyFlowsChart() {
                     label: (labelData: any) => {
                         const yAxisID = labelData.dataset.yAxisID;
                         const temperature = data.dataPoints[labelData.dataIndex].temperature || 0;
+                        if (hasHistoricalData && historicalFlowData.dataPoints[labelData.dataIndex]) {
+                            return 'Recorded: '.concat(labelData.raw).concat(' m³/s');
+                        }
                         if (yAxisID === 'volume') {
                             return 'Forecast: '.concat(labelData.raw).concat(' m³/s');
-                        }
-                        if (yAxisID === 'historicalVolume') {
-                            return 'Recorded: '.concat(labelData.raw).concat(' m³/s');
                         }
                         return 'Temperature: '.concat(temperature.toString()).concat('°C');
                     }
