@@ -29,20 +29,20 @@ function LowerBanner() {
                 ></IonIcon>
             </div>
             <div className='titleValueStacked middle' id="open-flow-change-modal">
-                <IonText color='medium' className="title">MINIMUM FLOW</IonText>
+                <IonText color='medium' className="title">PREFERRED FLOW</IonText>
                 <IonText color='primary' className="flow-value"><b>{targetFlow} m³/s</b></IonText>
                 <IonModal ref={modal} trigger="open-flow-change-modal">
                     <IonContent>
                         <div className="modal-content">
                             <IonText className="modal-description" color='medium'>
-                                Slide to adjust the minimum flow rate.
+                                Slide to adjust the preferred flow rate.
                             </IonText>
                             <IonText color='primary'><b>{targetFlow} m³/s</b></IonText>
                             <div className="rangeContainer">
                                 <IonRange value={targetFlow} min={MINIMUM_FLOW_RATE} max={MAXIMUM_FLOW_RATE} step={1} onIonInput={(event) => handleSliderChange(+event.detail.value)}></IonRange>
                             </div>
                             <IonText className="modal-description" color='medium'>
-                                Flows that meet this rate will be highlighted.
+                                Flows that meet or exceed this rate will be highlighted.
                             </IonText>
                         </div>
                     </IonContent>
