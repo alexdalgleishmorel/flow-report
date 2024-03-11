@@ -148,6 +148,11 @@ export function Summary() {
                 {homeViewType === HomeViewType.SUMMARY && <div>{summaryView}</div>}
                 {homeViewType === HomeViewType.CHARTS && <div>{chartView}</div>}
             </IonContent>
+            <IonFooter class='arsa-message'>
+                <IonText color='medium'>
+                    In collaboration with the Alberta River Surfing Association
+                </IonText>
+            </IonFooter>
         </div>
     );
 }
