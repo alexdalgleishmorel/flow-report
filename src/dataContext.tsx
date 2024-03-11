@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import FLOW_DATA from './flowData.json';
 import HISTORICAL_FLOW_DATA from './historicalFlowData.json';
 import WEATHER_DATA from './weatherData.json';
+import TIME_DATA from './timeData.json';
 import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
 
 export enum HomeViewType {
@@ -119,6 +120,7 @@ export const useData = () => {
 };
 
 function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
+  const isDST: boolean = TIME_DATA['dst'];
   const hourlyTemperatures: number[] = rawWeatherData['hourly']['temperature_2m'].slice(0, 168);
   const sunriseStrings: string[] = rawWeatherData['daily']['sunrise'].slice(0, 4).map((value: string) => value.split('T')[1]);
   let sunriseHours: number [] = sunriseStrings.map(string => {
@@ -145,8 +147,7 @@ function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
       const dateTime = entry.period.split(" ", 2);
       const volume = Number(entry.barrier);
       dataPoints.push({ hour: Number(dateTime[1])-1, volume: volume, temperature: hourlyTemperatures.shift() });
-      date = new Date(dateTime[0]);
-      date.setHours(date.getHours()+7);
+      date = new Date(`${dateTime[0]}T00:00:00-0${isDST ? 6 : 7}:00`);
     });
     let now = new Date();
     now.setHours(0, 0, 0, 0);
