@@ -28,7 +28,7 @@ const Home = () => {
 
 function Loading() {
   return (
-    <div className='full-screen-content'>
+    <div className='summary-screen-content'>
       <IonSpinner name='dots'></IonSpinner>
       <IonText color='primary'>Fetching River Data</IonText>
     </div>
