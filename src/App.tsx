@@ -22,6 +22,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 import { DataProvider } from './dataContext';
+import { useEffect } from 'react';
+import { initGA, logPageView } from './analytics';
 
 const WINDOW_HEIGHT_LIMIT = 300;
 const WINDOW_WIDTH_LIMIT = 450;
@@ -40,16 +42,23 @@ export function isNarrowWidth(): boolean {
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <DataProvider>
-          <Home />
-        </DataProvider>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  useEffect(() => {
+    initGA();
+    logPageView(window.location.pathname + window.location.search);
+  }, []);
+
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <DataProvider>
+            <Home />
+          </DataProvider>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  )
+};
 
 export default App;
