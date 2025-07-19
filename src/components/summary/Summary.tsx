@@ -7,6 +7,7 @@ import SimpleDailyFlowsChart from '../dailyFlowsContainer/dailyFlowChart/SimpleD
 import Config from './config/Config';
 
 import './Summary.css';
+import { logEvent } from '../../analytics';
 
 interface FlowTimeRangeProps {
     flowTimeRanges: Date[][];
@@ -69,7 +70,10 @@ export function Summary() {
         <div 
             key={item.day.toString()}
             className={`item-container ${index === flowData.length - 1 ? 'isLast' : ''}`}
-            onClick={() => setSelectedIndex(index)}
+            onClick={() => {
+                setSelectedIndex(index);
+                logEvent('select_summary_item', 'flow_view', `index_${index}`);
+            }}
         >
             <div className='item-content'>
                 <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
@@ -85,7 +89,10 @@ export function Summary() {
         <div 
             key={item.day.toString()}
             className={`item-container chart ${index === flowData.length - 1 ? 'isLast' : ''}`}
-            onClick={() => setSelectedIndex(index)}
+            onClick={() => {
+                setSelectedIndex(index);
+                logEvent('select_chart_item', 'flow_view', `index_${index}`);
+            }}
         >
             <div className='item-content'>
                 <IonCardSubtitle class='item-title' color='dark'>{item.day.toDateString()}</IonCardSubtitle>
