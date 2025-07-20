@@ -1,4 +1,4 @@
-import { IonCardSubtitle, IonContent, IonFooter, IonIcon, IonModal, IonText } from '@ionic/react';
+import { IonCardSubtitle, IonContent, IonFooter, IonHeader, IonIcon, IonModal, IonText } from '@ionic/react';
 import { arrowBackOutline, chevronBackOutline, chevronForwardOutline, listOutline, optionsOutline, squareSharp, statsChartOutline } from 'ionicons/icons';
 import { useRef, useState } from 'react';
 
@@ -102,6 +102,7 @@ export function Summary() {
                     &nbsp;
                     <IonText color='medium'>At least {targetFlow} m³/s</IonText>
                 </div>
+                <div className='tiny-spacer'></div>
                 <div className='simple-chart-container'>
                     <SimpleDailyFlowsChart selectedIndex={index}></SimpleDailyFlowsChart>
                 </div>
@@ -111,49 +112,48 @@ export function Summary() {
     const modal = useRef<HTMLIonModalElement>(null);
     return (
         <div className='summary-screen-content'>
-            <IonContent>
-                <div className='summary-footer'>
-                    <div className='titleValueStacked first'>
-                        <IonIcon
-                            size='large'
-                            color='primary'
-                            icon={homeViewType === HomeViewType.SUMMARY ? statsChartOutline : listOutline}
-                            onClick={toggleHomeView}
-                        >
-                        </IonIcon>
-                        <IonText color='medium' className='title'>VIEW</IonText>
-                    </div>
-                    <div className='spacer'></div>
-                    <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
-                    <div className='spacer'></div>
-                    <div className='titleValueStacked last' id='open-config-modal'>
-                        <IonIcon
-                            size='large'
-                            color='primary'
-                            icon={optionsOutline}
-                            
-                        >
-                        </IonIcon>
-                        <IonText color='medium' className='title'>CONFIG</IonText>
-                    </div>
-                    <IonModal ref={modal} trigger="open-config-modal">
-                        <IonContent>
-                            <Config></Config>
-                        </IonContent>
-                        <IonFooter className="modal-footer">
-                            <IonIcon 
-                                color='primary'
-                                size="large"
-                                icon={arrowBackOutline} 
-                                onClick={() => modal.current?.dismiss()}
-                            >
-                            </IonIcon>
-                        </IonFooter>
-                    </IonModal>
+            <IonHeader className='summary-header'>
+                <div className='titleValueStacked first'>
+                    <IonIcon
+                        size='large'
+                        color='primary'
+                        icon={homeViewType === HomeViewType.SUMMARY ? statsChartOutline : listOutline}
+                        onClick={toggleHomeView}
+                    >
+                    </IonIcon>
                 </div>
-                <div className='small-spacer'></div>
-                {homeViewType === HomeViewType.SUMMARY && <div>{summaryView}</div>}
-                {homeViewType === HomeViewType.CHARTS && <div>{chartView}</div>}
+                <div className='spacer'></div>
+                <IonText className='main-title'><b>Mountain Wave Report</b></IonText>
+                <div className='spacer'></div>
+                <div className='titleValueStacked last' id='open-config-modal'>
+                    <IonIcon
+                        size='large'
+                        color='primary'
+                        icon={optionsOutline}
+                        
+                    >
+                    </IonIcon>
+                </div>
+                <IonModal ref={modal} trigger="open-config-modal">
+                    <IonContent>
+                        <Config></Config>
+                    </IonContent>
+                    <IonFooter className="modal-footer">
+                        <IonIcon 
+                            color='primary'
+                            size="large"
+                            icon={arrowBackOutline} 
+                            onClick={() => modal.current?.dismiss()}
+                        >
+                        </IonIcon>
+                    </IonFooter>
+                </IonModal>
+            </IonHeader>
+            <IonContent>
+                <div className="view-container">
+                    {homeViewType === HomeViewType.SUMMARY && <div className="view-content">{summaryView}</div>}
+                    {homeViewType === HomeViewType.CHARTS && <div className="view-content">{chartView}</div>}
+                </div>
             </IonContent>
             <IonFooter class='arsa-message'>
                 <IonText color='medium'>
