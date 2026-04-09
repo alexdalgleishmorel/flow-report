@@ -1,1 +1,1 @@
-{"utc_offset":"-06:00","timezone":"America/Edmonton","day_of_week":2,"day_of_year":97,"datetime":"2026-04-07T11:58:12.438339-06:00","utc_datetime":"2026-04-07T17:58:12.438339+00:00","unixtime":1775584692,"raw_offset":-25200,"week_number":15,"dst":true,"abbreviation":"MDT","dst_offset":3600,"dst_from":"2026-03-08T09:00:00+00:00","dst_until":"2026-11-01T08:00:00+00:00","client_ip":"20.98.18.69"}
+{"error":"gone","status":410,"message":"WorldTimeAPI has been sunset. This endpoint is gone."}
