@@ -4,7 +4,6 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import FLOW_DATA from './flowData.json';
 import HISTORICAL_FLOW_DATA from './historicalFlowData.json';
 import WEATHER_DATA from './weatherData.json';
-import TIME_DATA from './timeData.json';
 import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
 
 export enum HomeViewType {
