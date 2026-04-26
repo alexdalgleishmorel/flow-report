@@ -25,9 +25,23 @@ jobs:
       
       - name: Fetch data from TransAlta API and Weather API
         run: |
-          curl --max-time 600 --retry 3 --retry-delay 10 --retry-connrefused --retry-all-errors --fail 'https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow' -o ./src/flowData.json
-          curl 'https://api.open-meteo.com/v1/forecast?latitude=51.051798892149094&longitude=-115.0190595210664&hourly=temperature_2m&daily=sunrise,sunset&timezone=America%2FDenver' > ./src/weatherData.json
-          curl -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords' --data 'stationNumber=05BF024&stationType=L&dataType=HG' > ./src/historicalFlowData.json
+          # Validate each response as JSON before overwriting the committed file.
+          # A non-JSON body (e.g. an HTML error page) gets discarded so it can't
+          # poison the repo and break the tsc build.
+          fetch_json() {
+            local dest="$1"; shift
+            local tmp; tmp=$(mktemp)
+            if curl --silent --show-error "$@" -o "$tmp" && jq -e . "$tmp" > /dev/null 2>&1; then
+              mv "$tmp" "$dest"
+            else
+              echo "::warning::$dest fetch returned invalid JSON; keeping previous version"
+              rm -f "$tmp"
+            fi
+          }
+
+          fetch_json ./src/flowData.json --max-time 600 --retry 3 --retry-delay 10 --retry-connrefused --retry-all-errors --fail 'https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow'
+          fetch_json ./src/weatherData.json 'https://api.open-meteo.com/v1/forecast?latitude=51.051798892149094&longitude=-115.0190595210664&hourly=temperature_2m&daily=sunrise,sunset&timezone=America%2FDenver'
+          fetch_json ./src/historicalFlowData.json -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords' --data 'stationNumber=05BF024&stationType=L&dataType=HG'
       
       - name: Commit and push if there are changes
         run: |
