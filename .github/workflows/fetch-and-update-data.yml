@@ -41,7 +41,20 @@ jobs:
 
           fetch_json ./src/flowData.json --max-time 600 --retry 3 --retry-delay 10 --retry-connrefused --retry-all-errors --fail 'https://azf-eai-denodo-proxies.azurewebsites.net/api/riverflow'
           fetch_json ./src/weatherData.json 'https://api.open-meteo.com/v1/forecast?latitude=51.051798892149094&longitude=-115.0190595210664&hourly=temperature_2m&daily=sunrise,sunset&timezone=America%2FDenver'
-          fetch_json ./src/historicalFlowData.json -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords' --data 'stationNumber=05BF024&stationType=L&dataType=HG'
+
+          # rivers.alberta.ca uses ASP.NET MVC anti-forgery (double-submit token):
+          # GET the root page to receive the __RequestVerificationToken cookie + a
+          # matching hidden form field, then POST with both. If extraction fails
+          # the POST still fires (without a token) and fetch_json's JSON guard
+          # rejects the HTML error response, preserving the previous file.
+          rivers_jar=$(mktemp)
+          rivers_html=$(mktemp)
+          curl --silent --show-error --max-time 60 -c "$rivers_jar" -o "$rivers_html" 'https://rivers.alberta.ca/' || true
+          rivers_token=$(grep -oE 'name="__RequestVerificationToken"[^>]*value="[^"]+"' "$rivers_html" | sed -E 's/.*value="([^"]+)".*/\1/' | head -1)
+          rm -f "$rivers_html"
+
+          fetch_json ./src/historicalFlowData.json -b "$rivers_jar" -X POST 'https://rivers.alberta.ca/DataService/WaterlevelRecords' --data-urlencode 'stationNumber=05BF024' --data-urlencode 'stationType=L' --data-urlencode 'dataType=HG' --data-urlencode "__RequestVerificationToken=$rivers_token"
+          rm -f "$rivers_jar"
       
       - name: Commit and push if there are changes
         run: |
