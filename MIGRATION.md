@@ -1,0 +1,99 @@
+# Migration runbook: git-commit data → Function URL + Lambda + DynamoDB
+
+This moves data out of the repo (where an hourly Action committed it) and into
+DynamoDB, served at runtime. Follow the phases in order; each is reversible
+until the history-cleanup phase.
+
+## Phase 1 — Stand up the backend (Terraform, `infra/`)
+
+1. `cd infra && terraform init -backend-config=...` then `terraform apply`
+   (see `infra/README.md` for the backend-config values).
+2. Manually invoke the writer once and confirm all 3 items land in DynamoDB:
+   `aws lambda invoke --function-name "$(terraform output -raw writer_function_name)" /dev/stdout`
+3. `curl "$(terraform output -raw data_api_url)" | jq` and diff the shapes
+   against the current `src/flowData.json`, `src/weatherData.json`,
+   `src/historicalFlowData.json`.
+   - `flow` / `weather` must be objects; `historical` must be a **string**.
+
+## Phase 2 — Point the frontend at the API (both paths still work)
+
+1. Set the GitHub Actions repo **variable** `VITE_DATA_API_URL` to the
+   `data_api_url` Terraform output.
+2. For local dev: `cp .env.example .env.local` and fill in the URL.
+3. The SPA now fetches at runtime (`src/dataContext.tsx`). The committed JSON
+   files are no longer imported but stay in the repo as a safety net until
+   Phase 5.
+
+## Phase 3 — Cut over the schedule
+
+1. Confirm the EventBridge hourly rule is enabled (created by `terraform apply`:
+   `wave-report-hourly-fetch`).
+2. **Disable the old hourly Action.** It's already been rewritten to
+   `.github/workflows/deploy.yml` (deploy-only, on push to `main`) — verify no
+   `schedule:` trigger remains and no step commits data.
+3. Watch one full hour: confirm DynamoDB `updatedAt` advances and the live site
+   shows fresh data.
+
+**Rollback (any time before Phase 5):** re-add the `schedule:` + fetch/commit
+steps from git history; the bundled JSON fallback is still present.
+
+## Phase 4 — Consolidate branches
+
+Today: `main` (code), `production` (code + hourly data commits), `gh-pages`
+(build output). After cutover, `production`'s only ongoing role (data commits)
+is gone.
+
+1. Merge any **code-only** changes from `production` into `main`.
+2. Make `main` the single source of truth; point the deploy workflow at `main`
+   (already done) and delete `production`.
+
+## Phase 5 — Clean up git history
+
+Do this only after a day of verified hourly updates from DynamoDB. This rewrites
+history and force-pushes — safe here because it's a single-author repo. Requires
+[`git-filter-repo`](https://github.com/newren/git-filter-repo)
+(`brew install git-filter-repo`).
+
+```bash
+# 0. SAFETY: full backup you can restore from.
+git tag pre-cleanup-backup
+git push origin pre-cleanup-backup
+cd .. && git clone --mirror <repo-url> wave-report-backup.git   # off-machine copy
+
+# 1. Remove the data files from ALL history. The hourly "Update data" commits
+#    touched ONLY these files, so they become empty and are pruned automatically.
+cd wave-report
+git filter-repo --invert-paths \
+  --path src/flowData.json \
+  --path src/weatherData.json \
+  --path src/historicalFlowData.json
+
+# 2. Also delete them from the working tree going forward.
+git rm --cached src/flowData.json src/weatherData.json src/historicalFlowData.json 2>/dev/null || true
+
+# 3. Reclaim space locally.
+git gc --aggressive --prune=now
+
+# 4. Force-push the rewritten history (GitHub repacks server-side after this).
+git push --force --all
+git push --force --tags
+```
+
+Then **re-clone fresh** (`git clone <repo-url>`) — never `git pull` a rewritten
+repo into an old clone.
+
+### gh-pages branch
+
+It's full of build-artifact deploy commits. Simplest: delete it and let the next
+`npm run deploy` regenerate it.
+
+```bash
+git push origin --delete gh-pages    # next deploy recreates it
+```
+
+### After cleanup
+
+- Add the data files to `.gitignore` (left behind only if a future writer ever
+  caches locally) — optional, since they no longer exist anywhere.
+- Keep `pre-cleanup-backup` and the mirror clone for ~2 weeks, then delete once
+  confident.

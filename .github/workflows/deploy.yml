@@ -1,0 +1,38 @@
+name: Build and Deploy
+
+# Data is now fetched hourly by the writer Lambda and served from DynamoDB via
+# the reader Function URL — no more hourly data commits. This workflow only
+# rebuilds and redeploys the static site when code changes.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  buildAndDeploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build and Deploy
+        run: |
+          git config --global user.email "alex.dalgleishmorel@gmail.com"
+          git config --global user.name "alexdalgleishmorel"
+          git remote set-url origin https://alexdalgleishmorel:${{ secrets.GITHUB_TOKEN }}@github.com/alexdalgleishmorel/flow-report.git
+          npm run deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The reader Lambda Function URL (from `sam deploy` output DataApiUrl).
+          VITE_DATA_API_URL: ${{ vars.VITE_DATA_API_URL }}

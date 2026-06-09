@@ -1,10 +1,11 @@
 import { debounce } from 'lodash';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-import FLOW_DATA from './flowData.json';
-import HISTORICAL_FLOW_DATA from './historicalFlowData.json';
-import WEATHER_DATA from './weatherData.json';
 import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
+
+// Data is served at runtime by the reader Lambda (Function URL), no longer
+// bundled at build time. Set VITE_DATA_API_URL at build to the Function URL.
+const DATA_API_URL = import.meta.env.VITE_DATA_API_URL as string | undefined;
 
 export enum HomeViewType {
   SUMMARY = 'SUMMARY',
@@ -40,7 +41,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   };
 
   const [flowData, setFlowData] = useState<FlowData[]>([]);
-  const [historicalFlowData] = useState<FlowData>(processHistoricalFlowData());
+  const [historicalFlowData, setHistoricalFlowData] = useState<FlowData>({ day: new Date(), dataPoints: [] });
   const [targetFlow, setTargetFlow] = useState<number>(getPreferredFlowFromStorage());
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
@@ -49,7 +50,22 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [homeViewType, setHomeViewType] = useState<HomeViewType>(getPreferredHomeViewFromStorage());
 
   useEffect(() => {
-    setFlowData(processFlowData(FLOW_DATA, WEATHER_DATA));
+    if (!DATA_API_URL) {
+      console.error('VITE_DATA_API_URL is not set; cannot load flow data');
+      return;
+    }
+    let cancelled = false;
+    fetch(DATA_API_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setFlowData(processFlowData(data.flow, data.weather));
+        setHistoricalFlowData(processHistoricalFlowData(data.historical));
+      })
+      .catch((err) => console.error('Failed to load flow data', err));
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const setDarkTheme = (state: boolean) => {
@@ -195,9 +211,10 @@ export function calculateTargetDateRanges(targetFlow: number, flowData: FlowData
   return ranges;
 }
 
-function processHistoricalFlowData(): FlowData {
+function processHistoricalFlowData(rawHistorical: string | null | undefined): FlowData {
   try {
-    const readings = JSON.parse(HISTORICAL_FLOW_DATA)[0].data as Array<[string, number, number, number, number]>;
+    if (!rawHistorical) throw new Error('no historical data');
+    const readings = JSON.parse(rawHistorical)[0].data as Array<[string, number, number, number, number]>;
 
     const lastEntry = readings[readings.length - 1];
     const mostRecentDate = lastEntry[0].split(" ")[0];
