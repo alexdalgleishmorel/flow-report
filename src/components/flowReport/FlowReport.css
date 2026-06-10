@@ -1,0 +1,264 @@
+/* Multi-day flow report (landing view) */
+.fr-report {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--fr-page);
+}
+
+/* the page fills the viewport; day cards share the leftover height evenly
+   (scrolls only when the screen is too short for the content) */
+.fr-page {
+  max-width: 1760px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 18px clamp(16px, 4vw, 56px) 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* page header */
+.fr-pagehead {
+  flex: none;
+  margin-bottom: 16px;
+}
+
+.fr-ph-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.fr-ph-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fr-ink-soft);
+}
+
+.fr-config-btn {
+  cursor: pointer;
+  flex: none;
+}
+
+/* day cards */
+.fr-days {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fr-daycard {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--fr-card);
+  border: 1px solid var(--fr-bd);
+  border-radius: 16px;
+  padding: 14px clamp(12px, 2vw, 28px) 12px;
+  box-shadow: var(--fr-shadow);
+  cursor: pointer;
+}
+
+.fr-daycard-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 12px;
+  min-height: 24px;
+}
+
+.fr-daydate {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fr-ink);
+}
+
+/* 24-hour strip */
+.fr-strip { position: relative; }
+
+.fr-grid24 {
+  /* minmax(0, 1fr) so a wide cell (the "now" pill) can't stretch its
+     column and push the strip past the card edge on narrow screens */
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+}
+
+.fr-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* top-slot content sits at the bottom of its row, so a lone sun glyph
+   drops down next to the strip instead of floating when another hour's
+   slot is taller (e.g. sun stacked above "now") */
+.fr-topslots .fr-cell { align-items: flex-end; }
+
+.fr-nowslot {
+  min-height: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.fr-nowpill {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--fr-now-soft);
+  padding: 1.5px 5px;
+  border-radius: 5px;
+  line-height: 1;
+}
+
+.fr-sun-ic {
+  width: 22px;
+  height: 17px;
+  color: var(--fr-orange);
+  display: block;
+}
+
+/* value runs: one centered number + one bracketing rail per stretch of
+   identical consecutive values */
+.fr-runs {
+  margin-top: 7px;
+}
+
+.fr-run {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 0 6px;
+  min-width: 0;
+}
+
+.fr-run.is-past { opacity: 0.55; }
+
+/* the hero number: blue only when surfable */
+.fr-runnum {
+  font-size: clamp(15px, 1.3vw, 21px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--fr-num-off);
+  line-height: 1;
+}
+
+.fr-run.is-surf .fr-runnum { color: var(--fr-flow); }
+
+.fr-runrail {
+  position: relative;
+  width: calc(100% - 6px);
+  height: 2.5px;
+  border-radius: 999px;
+  background: var(--fr-mag-off);
+}
+
+.fr-runrail::before,
+.fr-runrail::after {
+  content: '';
+  position: absolute;
+  bottom: -2.25px;
+  width: 2.5px;
+  height: 7px;
+  border-radius: 999px;
+  background: inherit;
+}
+
+.fr-runrail::before { left: 0; }
+.fr-runrail::after { right: 0; }
+
+.fr-run.is-surf .fr-runrail { background: var(--fr-flow); }
+
+/* a sun with nothing beneath it drops into the runs row, bottom-aligned
+   with the run numbers (padding = rail height + gap + run padding) */
+.fr-sun-drop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16.5px;
+  min-width: 0;
+  pointer-events: none;
+}
+
+/* hour axis */
+.fr-hours .fr-cell { padding-top: 7px; }
+
+.fr-hr {
+  font-size: clamp(8px, 0.7vw, 10px);
+  font-weight: 500;
+  color: var(--fr-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.fr-hr.is-sun { color: var(--fr-orange); font-weight: 700; }
+.fr-hr.is-now { color: var(--fr-now); font-weight: 800; }
+
+/* page footer */
+.fr-pagefoot {
+  flex: none;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--fr-bd);
+  font-size: 13px;
+  color: var(--fr-ink-soft);
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Narrow screens: all 24 hours stay visible at a glance. Consolidated
+   numbers leave plenty of room, so only the per-hour bits (hour labels,
+   sun glyphs, now pill) need to scale with the viewport. */
+@media (max-width: 720px) {
+  .fr-page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .fr-daycard {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .fr-runs { margin-top: 4px; }
+
+  .fr-run {
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+
+  .fr-runnum { font-size: clamp(11px, 3.4vw, 15px); }
+
+  .fr-runrail { width: calc(100% - 3px); height: 2px; }
+
+  .fr-runrail::before,
+  .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
+
+  .fr-sun-drop { padding-bottom: 12px; }
+
+  .fr-nowslot { min-height: 13px; }
+
+  .fr-nowpill {
+    font-size: 6.5px;
+    padding: 1px 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .fr-sun-ic { width: 13px; height: 10px; }
+
+  .fr-hours .fr-cell { padding-top: 5px; }
+  .fr-hr { font-size: clamp(6px, 1.8vw, 7.5px); }
+}

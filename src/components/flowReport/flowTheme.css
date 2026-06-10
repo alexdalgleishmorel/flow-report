@@ -1,0 +1,69 @@
+/* Design tokens for the surfable-flow redesign.
+   Scoped to the .fr-scope wrapper (never html/body); the app's existing
+   body.dark class selects the dark set.
+   NOTE: do not add a CSS transition to any var()-backed fill/background —
+   a var-backed paint won't re-interpolate across a theme swap and gets
+   stuck on the old color. Theme switching is instant by design. */
+.fr-scope {
+  --fr-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  --fr-page: #eef1f5;
+  --fr-card: #ffffff;
+  --fr-bd: #e3e8ef;
+  --fr-ink: #0f172a;
+  --fr-ink-soft: #94a3b8;
+  --fr-ink-mid: #475569;
+  --fr-flow: #2563eb;
+  --fr-num-off: #9aa5b4;
+  --fr-mag-off: #bcc5d1;
+  --fr-track: #e7ecf2;
+  --fr-orange: #e07b12;
+  --fr-now: #2563eb;
+  --fr-now-soft: #7d9bd6;
+
+  /* detail-chart extras */
+  --fr-bar-off: #c2cbd7;
+  --fr-band-fill: rgba(37, 99, 235, 0.09);
+  --fr-grid: #eef2f7;
+  --fr-tip-bg: #111827;
+  --fr-tip-fg: #f9fafb;
+  --fr-tip-muted: #9ca3af;
+  --fr-tip-flow: #93c5fd;
+  --fr-tip-temp: #fca5a5;
+
+  --fr-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.05);
+
+  font-family: var(--fr-font);
+  -webkit-font-smoothing: antialiased;
+  color: var(--fr-ink);
+}
+
+body.dark .fr-scope {
+  --fr-page: #09090b;
+  --fr-card: #161618;
+  --fr-bd: #2a2a2e;
+  --fr-ink: #f4f4f5;
+  --fr-ink-soft: #71717a;
+  --fr-ink-mid: #a1a1aa;
+  --fr-flow: #60a5fa;
+  --fr-num-off: #6c6c75;
+  --fr-mag-off: #41414a;
+  --fr-track: #26262b;
+  --fr-orange: #f59e0b;
+  --fr-now: #60a5fa;
+  --fr-now-soft: #496488;
+
+  --fr-bar-off: #3a3a42;
+  --fr-band-fill: rgba(96, 165, 250, 0.13);
+  --fr-grid: #212126;
+  --fr-tip-bg: #0c0c0e;
+  --fr-tip-fg: #f4f4f5;
+  --fr-tip-muted: #8b8b93;
+
+  --fr-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* The detail view sits on a slightly darker page surface in dark mode */
+body.dark .fr-scope.fr-detail {
+  --fr-card: #131315;
+}

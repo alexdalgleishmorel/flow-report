@@ -1,23 +1,16 @@
 import { debounce } from 'lodash';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-import { PREFERRED_FLOW_RATE, PREFERRED_HOME_VIEW, PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
+import { PREFERS_DARK_COLOR_SCHEME, PREFERS_TWELVE_HOUR } from './App';
 
 // Data is served at runtime by the reader Lambda (Function URL), no longer
 // bundled at build time. Set VITE_DATA_API_URL at build to the Function URL.
 const DATA_API_URL = import.meta.env.VITE_DATA_API_URL as string | undefined;
 
-export enum HomeViewType {
-  SUMMARY = 'SUMMARY',
-  CHARTS = 'CHARTS'
-}
-
 interface DataContextType {
   flowData: FlowData[];
   setFlowData: (data: FlowData[]) => void;
   historicalFlowData: FlowData;
-  targetFlow: number;
-  setTargetFlow: (targetFlow: number) => void;
   selectedIndex: number;
   setSelectedIndex: (index: number) => void;
   stateUpdate: number;
@@ -26,8 +19,6 @@ interface DataContextType {
   setDarkMode: (state: boolean) => void;
   twelveHour: boolean;
   setTwelveHour: (state: boolean) => void;
-  homeViewType: HomeViewType;
-  setHomeViewType: (type: HomeViewType) => void;
 }
 
 const FlowDataContext = createContext<DataContextType | undefined>(undefined);
@@ -42,12 +33,10 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   const [flowData, setFlowData] = useState<FlowData[]>([]);
   const [historicalFlowData, setHistoricalFlowData] = useState<FlowData>({ day: new Date(), dataPoints: [] });
-  const [targetFlow, setTargetFlow] = useState<number>(getPreferredFlowFromStorage());
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [stateUpdate, setStateUpdate] = useState<number>(0);
   const [darkMode, setDarkMode] = useState<boolean>(getDarkModePreference());
   const [twelveHour, setTwelveHour] = useState<boolean>(getTwelveHourPreference());
-  const [homeViewType, setHomeViewType] = useState<HomeViewType>(getPreferredHomeViewFromStorage());
 
   useEffect(() => {
     if (!DATA_API_URL) {
@@ -76,10 +65,8 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setDarkTheme(darkMode);
     localStorage.setItem(PREFERS_DARK_COLOR_SCHEME, String(darkMode));
     localStorage.setItem(PREFERS_TWELVE_HOUR, String(twelveHour));
-    localStorage.setItem(PREFERRED_FLOW_RATE, String(targetFlow));
-    localStorage.setItem(PREFERRED_HOME_VIEW, homeViewType);
     setStateUpdate(stateUpdate+1);
-  }, [darkMode, twelveHour, targetFlow, homeViewType]);
+  }, [darkMode, twelveHour]);
 
   useEffect(() => {
     const updateOnHour = () => {
@@ -120,7 +107,7 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   return (
-    <FlowDataContext.Provider value={{ flowData, setFlowData, targetFlow, setTargetFlow, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, homeViewType, setHomeViewType, historicalFlowData }}>
+    <FlowDataContext.Provider value={{ flowData, setFlowData, selectedIndex, setSelectedIndex, stateUpdate, setStateUpdate, darkMode, setDarkMode, twelveHour, setTwelveHour, historicalFlowData }}>
       {children}
     </FlowDataContext.Provider>
   );
@@ -182,35 +169,6 @@ function processFlowData(rawFlowData: any, rawWeatherData: any): FlowData[] {
   return flowData;
 }
 
-export function calculateTargetDateRanges(targetFlow: number, flowData: FlowData): Date[][] {
-  let ranges: Date[][] = [];
-  let timeRange: Date[] = [];
-  const day: Date = flowData.day;
-  flowData.dataPoints.forEach(dataPoint => {
-    if (dataPoint.volume >= targetFlow && timeRange.length == 0) {
-        let startTime = new Date(day);
-        startTime.setHours(dataPoint.hour);
-        timeRange.push(startTime);
-    }
-    if (dataPoint.volume < targetFlow && timeRange.length == 1) {
-        let endTime = new Date(day);
-        endTime.setHours(dataPoint.hour);
-        timeRange.push(endTime);
-    }
-    if (timeRange.length == 2) {
-      ranges.push(timeRange);
-      timeRange = [];
-    }
-  });
-  if (timeRange.length) {
-    let endTime = new Date(day);
-    endTime.setHours(24);
-    timeRange.push(endTime);
-    ranges.push(timeRange);
-  }
-  return ranges;
-}
-
 function processHistoricalFlowData(rawHistorical: string | null | undefined): FlowData {
   try {
     if (!rawHistorical) throw new Error('no historical data');
@@ -240,18 +198,6 @@ function processHistoricalFlowData(rawHistorical: string | null | undefined): Fl
   }
 }
 
-export function isUpcomingTargetDateRange(dateRange: Date[]): boolean {
-  return Date.now() < dateRange[0]?.getTime();
-}
-
-export function isInsideTargetDateRange(dateRange: Date[]): boolean {
-  return Date.now() >= dateRange[0]?.getTime() && Date.now() <= dateRange[1]?.getTime();
-}
-
-export function isIndefiniteTargetDateRange(dateRange: Date[]): boolean {
-  return dateRange.length === 1;
-}
-
 export function getTimeString(date: Date, twelveHour: boolean): string {
   return date.toLocaleString([], {hour12: twelveHour, hour: 'numeric', minute: '2-digit'});
 }
@@ -262,16 +208,6 @@ function getPrefersDarkFromStorage(): boolean {
 
 function getPrefersTwelveHourFromStorage(): boolean {
   return localStorage.getItem(PREFERS_TWELVE_HOUR) === 'true' ? true : false;
-}
-
-function getPreferredFlowFromStorage(): number {
-  const value = localStorage.getItem(PREFERRED_FLOW_RATE);
-  return value ? Number(value) : 25;
-}
-
-export function getPreferredHomeViewFromStorage(): HomeViewType {
-  const value = localStorage.getItem(PREFERRED_HOME_VIEW);
-  return value ? (value === HomeViewType.SUMMARY ? HomeViewType.SUMMARY : HomeViewType.CHARTS) : HomeViewType.CHARTS;
 }
 
 export interface FlowData {
