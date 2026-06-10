@@ -272,3 +272,48 @@
   .fr-hours .fr-cell { padding-top: 5px; }
   .fr-hr { font-size: clamp(6px, 1.8vw, 7.5px); }
 }
+
+/* Short viewports (iframe embeds): compress spacing so the header, all
+   four day cards, and the footer fit without scrolling. */
+@media (max-height: 700px) {
+  .fr-page { padding: 8px 12px 6px; }
+
+  .fr-pagehead { margin-bottom: 6px; }
+  .fr-ph-kicker { font-size: 11px; }
+
+  .fr-days { gap: 8px; }
+
+  .fr-daycard {
+    padding: 7px 10px 5px;
+    max-height: none;
+    border-radius: 12px;
+  }
+
+  .fr-daycard-head {
+    margin-bottom: 2px;
+    min-height: 0;
+  }
+
+  .fr-daydate { font-size: 12.5px; }
+
+  .fr-nowslot { min-height: 11px; }
+  .fr-nowpill { font-size: 6px; padding: 1px 3px; }
+  .fr-sun-ic { width: 12px; height: 9px; }
+
+  .fr-runs { margin-top: 2px; }
+  .fr-run { gap: 4px; padding-bottom: 3px; }
+  .fr-runnum { font-size: 12.5px; }
+  .fr-runrail { height: 2px; }
+  .fr-runrail::before,
+  .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
+  .fr-sun-drop { padding-bottom: 9px; }
+
+  .fr-hours .fr-cell { padding-top: 3px; }
+  .fr-hr { font-size: 6.5px; }
+
+  .fr-pagefoot {
+    margin-top: 6px;
+    padding-top: 6px;
+    font-size: 10.5px;
+  }
+}
