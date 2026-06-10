@@ -229,9 +229,19 @@
   }
 
   .fr-daycard {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 10px 8px 8px;
+    /* slightly shorter cards; leftover space spreads between them */
+    max-height: 150px;
   }
+
+  .fr-days { justify-content: space-evenly; }
+
+  .fr-daycard-head {
+    margin-bottom: 4px;
+    min-height: 0;
+  }
+
+  .fr-daydate { font-size: 14px; }
 
   .fr-runs { margin-top: 4px; }
 

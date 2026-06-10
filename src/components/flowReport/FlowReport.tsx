@@ -58,13 +58,16 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
         <h3 className="fr-daydate">{report.label}</h3>
       </div>
       <div className="fr-strip">
-        <div className="fr-grid24 fr-topslots">
-          {report.values.map((_, hour) => (
-            <div key={hour} className="fr-cell">
-              <TopSlot report={report} hour={hour} sun={topSun(hour)} />
-            </div>
-          ))}
-        </div>
+        {/* skip the slot row entirely when no hour has a pill or top-row sun */}
+        {report.values.some((_, hour) => isNow(report, hour) || topSun(hour) != null) && (
+          <div className="fr-grid24 fr-topslots">
+            {report.values.map((_, hour) => (
+              <div key={hour} className="fr-cell">
+                <TopSlot report={report} hour={hour} sun={topSun(hour)} />
+              </div>
+            ))}
+          </div>
+        )}
         {/* Each run of identical consecutive values is one rail (blue when
             surfable, grey otherwise) with the value centered over it */}
         <div className="fr-grid24 fr-runs">
