@@ -48,25 +48,51 @@ export interface ValueRun {
   start: number;
   length: number;
   value: number | null;
+  label: string; // what's drawn over the rail: a single value or a "lo–hi" range
   state: FlowClass;
   past: boolean;
 }
 
-// Consecutive hours with the same (rounded) flow value collapse into one
-// run — drawn as a single rail with the value centered over it. Runs also
-// split at the recorded/forecast boundary so the faded-past cue survives.
+// History is summarized, the future is detailed:
+//   - All past hours collapse into one neutral run spanning the whole stretch,
+//     labelled with the range of values seen (e.g. "26–48"), never colored by
+//     surfability — what already happened is greyed out regardless.
+//   - From the first non-past hour on, consecutive hours with the same (rounded)
+//     value collapse into one run — a single rail with the value centered over it.
 export function valueRuns(report: DayReport): ValueRun[] {
   const runs: ValueRun[] = [];
-  report.values.forEach((raw, hour) => {
+
+  let firstFuture = 0;
+  if (report.pastUntil != null && report.pastUntil >= 0) {
+    const pastEnd = Math.min(report.pastUntil, HOURS - 1);
+    const seen = report.values
+      .slice(0, pastEnd + 1)
+      .filter((v): v is number => v != null)
+      .map((v) => Math.round(v));
+    const lo = seen.length ? Math.min(...seen) : null;
+    const hi = seen.length ? Math.max(...seen) : null;
+    const label = lo == null ? '–' : lo === hi ? `${lo}` : `${lo}–${hi}`;
+    runs.push({ start: 0, length: pastEnd + 1, value: null, label, state: 'none', past: true });
+    firstFuture = pastEnd + 1;
+  }
+
+  for (let hour = firstFuture; hour < report.values.length; hour++) {
+    const raw = report.values[hour];
     const value = raw != null ? Math.round(raw) : null;
-    const past = isPast(report, hour);
     const prev = runs[runs.length - 1];
-    if (prev && prev.value === value && prev.past === past) {
+    if (prev && !prev.past && prev.value === value) {
       prev.length++;
-      return;
+      continue;
     }
-    runs.push({ start: hour, length: 1, value, state: classify(value), past });
-  });
+    runs.push({
+      start: hour,
+      length: 1,
+      value,
+      label: value != null ? `${value}` : '–',
+      state: classify(value),
+      past: false,
+    });
+  }
   return runs;
 }
 

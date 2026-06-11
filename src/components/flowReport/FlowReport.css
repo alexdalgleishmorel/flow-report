@@ -80,8 +80,9 @@
   color: var(--fr-ink);
 }
 
-/* 24-hour strip */
-.fr-strip { position: relative; }
+/* 24-hour strip. container-type lets a lone single-hour number size itself
+   against one column's width (cqw) so it can't collide with its neighbors. */
+.fr-strip { position: relative; container-type: inline-size; }
 
 .fr-grid24 {
   /* minmax(0, 1fr) so a wide cell (the "now" pill) can't stretch its
@@ -182,6 +183,12 @@
 .fr-runrail::after { right: 0; }
 
 .fr-run.is-surf .fr-runrail { background: var(--fr-flow); }
+
+/* A single-hour run (value unique vs. both neighbors) has no span to bracket:
+   drop the rail (kept invisible so numbers stay vertically aligned) and cap
+   the number at one column's width so adjacent unique values never overlap. */
+.fr-run.is-single .fr-runrail { visibility: hidden; }
+.fr-run.is-single .fr-runnum { font-size: clamp(8px, 2.6cqw, 21px); }
 
 /* a sun with nothing beneath it drops into the runs row, bottom-aligned
    with the run numbers (padding = rail height + gap + run padding) */
