@@ -74,10 +74,10 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
           {runs.map((run, index) => (
             <div
               key={index}
-              className={`fr-run is-${run.state}${run.past ? ' is-past' : ''}`}
+              className={`fr-run is-${run.state}${run.past ? ' is-past' : ''}${run.length === 1 ? ' is-single' : ''}`}
               style={{ gridRow: 1, gridColumn: `${run.start + 1} / span ${run.length}` }}
             >
-              <span className="fr-runnum">{run.value ?? '–'}</span>
+              <span className="fr-runnum">{run.label}</span>
               <span className="fr-runrail" />
             </div>
           ))}
