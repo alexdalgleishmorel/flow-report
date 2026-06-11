@@ -6,7 +6,7 @@ import { logEvent } from '../../analytics';
 import { useData } from '../../dataContext';
 import Config from '../config/Config';
 import SunIcon from './SunIcon';
-import { DayReport, buildDayReport, isNow, isSun, valueRuns } from './dayReport';
+import { DayReport, buildDayReport, isNow, isPast, isSun, valueRuns } from './dayReport';
 
 import './flowTheme.css';
 import './FlowReport.css';
@@ -32,10 +32,14 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
 
   // A sun glyph stays in the top slot only when something sits below it —
   // the "now" pill or a nearby run number. Otherwise it drops down into the
-  // empty stretch of the runs row, next to the rail.
+  // empty stretch of the runs row, next to the rail. A sun inside the
+  // summarized-past span never drops: that whole stretch is filled by the
+  // centered range label, which a dropped glyph would collide with.
   const numberCenters = runs.map((run) => run.start + (run.length - 1) / 2);
   const sunDrops = (hour: number): boolean =>
-    !isNow(report, hour) && numberCenters.every((center) => Math.abs(center - hour) >= 1.5);
+    !isNow(report, hour) &&
+    !isPast(report, hour) &&
+    numberCenters.every((center) => Math.abs(center - hour) >= 1.5);
 
   // A top-row sun within an hour of "now" moves into the now slot and stacks
   // above the pill — side by side they collide on narrow screens.
