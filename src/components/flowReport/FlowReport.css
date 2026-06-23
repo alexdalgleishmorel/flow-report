@@ -80,8 +80,8 @@
   color: var(--fr-ink);
 }
 
-/* 24-hour strip. container-type lets a lone single-hour number size itself
-   against one column's width (cqw) so it can't collide with its neighbors. */
+/* 24-hour strip. container-type lets every run number size itself against
+   one column's width (cqw) so adjacent values can't collide. */
 .fr-strip { position: relative; container-type: inline-size; }
 
 .fr-grid24 {
@@ -148,9 +148,11 @@
 
 .fr-run.is-past { opacity: 0.55; }
 
-/* the hero number: blue only when surfable */
+/* the hero number: blue only when surfable. Sized against one column's width
+   (cqw) so every run number — a single unique hour or a multi-hour range — is
+   the same size and adjacent values can never overlap. */
 .fr-runnum {
-  font-size: clamp(15px, 1.3vw, 21px);
+  font-size: clamp(8px, 2.6cqw, 21px);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -185,10 +187,9 @@
 .fr-run.is-surf .fr-runrail { background: var(--fr-flow); }
 
 /* A single-hour run (value unique vs. both neighbors) has no span to bracket:
-   drop the rail (kept invisible so numbers stay vertically aligned) and cap
-   the number at one column's width so adjacent unique values never overlap. */
+   drop the rail (kept invisible so numbers stay vertically aligned). The
+   number itself is already column-width-capped by .fr-runnum above. */
 .fr-run.is-single .fr-runrail { visibility: hidden; }
-.fr-run.is-single .fr-runnum { font-size: clamp(8px, 2.6cqw, 21px); }
 
 /* a sun with nothing beneath it drops into the runs row, bottom-aligned
    with the run numbers (padding = rail height + gap + run padding) */
@@ -257,8 +258,6 @@
     padding-bottom: 4px;
   }
 
-  .fr-runnum { font-size: clamp(11px, 3.4vw, 15px); }
-
   .fr-runrail { width: calc(100% - 3px); height: 2px; }
 
   .fr-runrail::before,
@@ -309,7 +308,6 @@
 
   .fr-runs { margin-top: 2px; }
   .fr-run { gap: 4px; padding-bottom: 3px; }
-  .fr-runnum { font-size: 12.5px; }
   .fr-runrail { height: 2px; }
   .fr-runrail::before,
   .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
