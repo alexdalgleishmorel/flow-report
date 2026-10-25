@@ -6,20 +6,25 @@ import { logEvent } from '../../analytics';
 import { useData } from '../../dataContext';
 import Config from '../config/Config';
 import SunIcon from './SunIcon';
-import { DayReport, buildDayReport, isNow, isPast, isSun, valueRuns } from './dayReport';
+import { DayReport, buildDayReport, isNow, isSun, valueRuns } from './dayReport';
 
 import './flowTheme.css';
 import './FlowReport.css';
 
-// Slot above the strip: holds the "now" pill on the current hour and the
-// sunrise/sunset glyph when something sits below it (the sun stacks above
-// "now" when they share an hour). Suns with nothing beneath them drop into
-// the runs row instead — see DayCard.
-function TopSlot({ report, hour, sun }: { report: DayReport; hour: number; sun: 'rise' | 'set' | null }) {
+// Marker slot under the hour axis: holds the "now" pill on the current hour
+// and the sunrise/sunset glyph, all on one fixed line. A sun within an hour
+// of "now" sits beside the pill in the now slot — in their own columns they
+// collide on narrow screens.
+function MarkerSlot({ report, hour, sun }: { report: DayReport; hour: number; sun: 'rise' | 'set' | null }) {
+  // beside the pill, the sun goes on the side of "now" its hour falls on;
+  // sharing the hour, sunrise leads and sunset trails
+  const sunHour = sun === 'rise' ? report.sunriseHour : report.sunsetHour;
+  const sunFirst = sunHour != null && (sunHour < hour || (sunHour === hour && sun === 'rise'));
   return (
-    <div className="fr-nowslot">
-      {sun && <SunIcon kind={sun} />}
+    <div className="fr-markerslot">
+      {sun && sunFirst && <SunIcon kind={sun} />}
       {isNow(report, hour) && <span className="fr-nowpill">now</span>}
+      {sun && !sunFirst && <SunIcon kind={sun} />}
     </div>
   );
 }
@@ -30,30 +35,17 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
   const sunKind = (hour: number): 'rise' | 'set' | null =>
     hour === report.sunriseHour ? 'rise' : hour === report.sunsetHour ? 'set' : null;
 
-  // A sun glyph stays in the top slot only when something sits below it —
-  // the "now" pill or a nearby run number. Otherwise it drops down into the
-  // empty stretch of the runs row, next to the rail. A sun inside the
-  // summarized-past span never drops: that whole stretch is filled by the
-  // centered range label, which a dropped glyph would collide with.
-  const numberCenters = runs.map((run) => run.start + (run.length - 1) / 2);
-  const sunDrops = (hour: number): boolean =>
-    !isNow(report, hour) &&
-    !isPast(report, hour) &&
-    numberCenters.every((center) => Math.abs(center - hour) >= 1.5);
+  const nearNow = (hour: number): boolean =>
+    report.nowHour != null && Math.abs(report.nowHour - hour) <= 1;
 
-  // A top-row sun within an hour of "now" moves into the now slot and stacks
-  // above the pill — side by side they collide on narrow screens.
-  const topSun = (hour: number): 'rise' | 'set' | null => {
+  // The sun glyph for an hour's marker slot: its own, or a neighbor's when
+  // this is the now slot and the sun moved in beside the pill.
+  const markerSun = (hour: number): 'rise' | 'set' | null => {
     if (isNow(report, hour)) {
-      const near = [report.sunriseHour, report.sunsetHour].find(
-        (sunHour) => sunHour != null && Math.abs(sunHour - hour) <= 1 && !sunDrops(sunHour)
-      );
+      const near = [report.sunriseHour, report.sunsetHour].find((sunHour) => sunHour != null && nearNow(sunHour));
       return near != null ? sunKind(near) : null;
     }
-    const kind = sunKind(hour);
-    if (!kind || sunDrops(hour)) return null;
-    if (report.nowHour != null && Math.abs(report.nowHour - hour) <= 1) return null; // moved into the now slot
-    return kind;
+    return nearNow(hour) ? null : sunKind(hour); // moved into the now slot
   };
 
   return (
@@ -62,16 +54,6 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
         <h3 className="fr-daydate">{report.label}</h3>
       </div>
       <div className="fr-strip">
-        {/* skip the slot row entirely when no hour has a pill or top-row sun */}
-        {report.values.some((_, hour) => isNow(report, hour) || topSun(hour) != null) && (
-          <div className="fr-grid24 fr-topslots">
-            {report.values.map((_, hour) => (
-              <div key={hour} className="fr-cell">
-                <TopSlot report={report} hour={hour} sun={topSun(hour)} />
-              </div>
-            ))}
-          </div>
-        )}
         {/* Each run of identical consecutive values is one rail (blue when
             surfable, grey otherwise) with the value centered over it */}
         <div className="fr-grid24 fr-runs">
@@ -85,15 +67,6 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
               <span className="fr-runrail" />
             </div>
           ))}
-          {report.values.map((_, hour) => {
-            const sun = sunKind(hour);
-            if (!sun || !sunDrops(hour)) return null;
-            return (
-              <div key={`sun-${hour}`} className="fr-sun-drop" style={{ gridRow: 1, gridColumn: hour + 1 }}>
-                <SunIcon kind={sun} />
-              </div>
-            );
-          })}
         </div>
         <div className="fr-grid24 fr-hours">
           {report.values.map((_, hour) => (
@@ -101,6 +74,13 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
               <span className={`fr-hr${isSun(report, hour) ? ' is-sun' : ''}${isNow(report, hour) ? ' is-now' : ''}`}>
                 {hour}
               </span>
+            </div>
+          ))}
+        </div>
+        <div className="fr-grid24 fr-markers">
+          {report.values.map((_, hour) => (
+            <div key={hour} className="fr-cell">
+              <MarkerSlot report={report} hour={hour} sun={markerSun(hour)} />
             </div>
           ))}
         </div>
