@@ -97,18 +97,19 @@
   justify-content: center;
 }
 
-/* top-slot content sits at the bottom of its row, so a lone sun glyph
-   drops down next to the strip instead of floating when another hour's
-   slot is taller (e.g. sun stacked above "now") */
-.fr-topslots .fr-cell { align-items: flex-end; }
+/* marker row under the hour axis: fixed height (the sun glyph's), so the
+   "now" pill and sun glyphs always sit on one line at one size. A sun
+   beside the pill makes the slot wider than its column; it overflows
+   centered on the hour. */
+.fr-markers .fr-cell { padding-top: 5px; }
 
-.fr-nowslot {
-  min-height: 22px;
+.fr-markerslot {
+  height: 17px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 2px;
+  justify-content: center;
+  gap: 3px;
+  flex: none;
 }
 
 .fr-nowpill {
@@ -132,10 +133,6 @@
 
 /* value runs: one centered number + one bracketing rail per stretch of
    identical consecutive values */
-.fr-runs {
-  margin-top: 7px;
-}
-
 .fr-run {
   display: flex;
   flex-direction: column;
@@ -191,17 +188,6 @@
    number itself is already column-width-capped by .fr-runnum above. */
 .fr-run.is-single .fr-runrail { visibility: hidden; }
 
-/* a sun with nothing beneath it drops into the runs row, bottom-aligned
-   with the run numbers (padding = rail height + gap + run padding) */
-.fr-sun-drop {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 16.5px;
-  min-width: 0;
-  pointer-events: none;
-}
-
 /* hour axis */
 .fr-hours .fr-cell { padding-top: 7px; }
 
@@ -251,8 +237,6 @@
 
   .fr-daydate { font-size: 14px; }
 
-  .fr-runs { margin-top: 4px; }
-
   .fr-run {
     gap: 6px;
     padding-bottom: 4px;
@@ -263,9 +247,8 @@
   .fr-runrail::before,
   .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
 
-  .fr-sun-drop { padding-bottom: 12px; }
-
-  .fr-nowslot { min-height: 13px; }
+  .fr-markers .fr-cell { padding-top: 4px; }
+  .fr-markerslot { height: 10px; gap: 2px; }
 
   .fr-nowpill {
     font-size: 6.5px;
@@ -302,16 +285,15 @@
 
   .fr-daydate { font-size: 12.5px; }
 
-  .fr-nowslot { min-height: 11px; }
+  .fr-markers .fr-cell { padding-top: 2px; }
+  .fr-markerslot { height: 9px; gap: 2px; }
   .fr-nowpill { font-size: 6px; padding: 1px 3px; }
   .fr-sun-ic { width: 12px; height: 9px; }
 
-  .fr-runs { margin-top: 2px; }
   .fr-run { gap: 4px; padding-bottom: 3px; }
   .fr-runrail { height: 2px; }
   .fr-runrail::before,
   .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
-  .fr-sun-drop { padding-bottom: 9px; }
 
   .fr-hours .fr-cell { padding-top: 3px; }
   .fr-hr { font-size: 6.5px; }
