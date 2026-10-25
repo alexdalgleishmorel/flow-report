@@ -11,42 +11,11 @@ import { DayReport, buildDayReport, isNow, isSun, valueRuns } from './dayReport'
 import './flowTheme.css';
 import './FlowReport.css';
 
-// Marker slot under the hour axis: holds the "now" pill on the current hour
-// and the sunrise/sunset glyph, all on one fixed line. A sun within an hour
-// of "now" sits beside the pill in the now slot — in their own columns they
-// collide on narrow screens.
-function MarkerSlot({ report, hour, sun }: { report: DayReport; hour: number; sun: 'rise' | 'set' | null }) {
-  // beside the pill, the sun goes on the side of "now" its hour falls on;
-  // sharing the hour, sunrise leads and sunset trails
-  const sunHour = sun === 'rise' ? report.sunriseHour : report.sunsetHour;
-  const sunFirst = sunHour != null && (sunHour < hour || (sunHour === hour && sun === 'rise'));
-  return (
-    <div className="fr-markerslot">
-      {sun && sunFirst && <SunIcon kind={sun} />}
-      {isNow(report, hour) && <span className="fr-nowpill">now</span>}
-      {sun && !sunFirst && <SunIcon kind={sun} />}
-    </div>
-  );
-}
-
 function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void }) {
   const runs = valueRuns(report);
 
   const sunKind = (hour: number): 'rise' | 'set' | null =>
     hour === report.sunriseHour ? 'rise' : hour === report.sunsetHour ? 'set' : null;
-
-  const nearNow = (hour: number): boolean =>
-    report.nowHour != null && Math.abs(report.nowHour - hour) <= 1;
-
-  // The sun glyph for an hour's marker slot: its own, or a neighbor's when
-  // this is the now slot and the sun moved in beside the pill.
-  const markerSun = (hour: number): 'rise' | 'set' | null => {
-    if (isNow(report, hour)) {
-      const near = [report.sunriseHour, report.sunsetHour].find((sunHour) => sunHour != null && nearNow(sunHour));
-      return near != null ? sunKind(near) : null;
-    }
-    return nearNow(hour) ? null : sunKind(hour); // moved into the now slot
-  };
 
   return (
     <div className="fr-daycard" onClick={onSelect}>
@@ -77,12 +46,27 @@ function DayCard({ report, onSelect }: { report: DayReport; onSelect: () => void
             </div>
           ))}
         </div>
-        <div className="fr-grid24 fr-markers">
-          {report.values.map((_, hour) => (
-            <div key={hour} className="fr-cell">
-              <MarkerSlot report={report} hour={hour} sun={markerSun(hour)} />
+        {/* Markers under the axis, each centered on its own hour column. Suns
+            and "now" get separate fixed lines: on narrow screens the pill is
+            wider than a column, so on a shared line a sun in a neighboring
+            hour would collide with it. */}
+        <div className="fr-grid24 fr-markers fr-sunrow">
+          {report.values.map((_, hour) => {
+            const sun = sunKind(hour);
+            return sun && (
+              <div key={hour} className="fr-cell" style={{ gridRow: 1, gridColumn: hour + 1 }}>
+                <SunIcon kind={sun} />
+              </div>
+            );
+          })}
+        </div>
+        {/* reserved on every card so all strips share one layout */}
+        <div className="fr-grid24 fr-markers fr-nowrow">
+          {report.nowHour != null && (
+            <div className="fr-cell" style={{ gridRow: 1, gridColumn: report.nowHour + 1 }}>
+              <span className="fr-nowpill">now</span>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

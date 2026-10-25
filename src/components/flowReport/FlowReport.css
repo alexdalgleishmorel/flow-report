@@ -97,20 +97,13 @@
   justify-content: center;
 }
 
-/* marker row under the hour axis: fixed height (the sun glyph's), so the
-   "now" pill and sun glyphs always sit on one line at one size. A sun
-   beside the pill makes the slot wider than its column; it overflows
-   centered on the hour. */
-.fr-markers .fr-cell { padding-top: 5px; }
-
-.fr-markerslot {
-  height: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  flex: none;
-}
+/* marker lines under the hour axis: one fixed-height line for sun glyphs
+   and one beneath it for the "now" pill (reserved on every card, so all
+   strips share one layout). Every marker is centered on its own hour column; content wider
+   than a column overflows evenly on both sides. */
+.fr-sunrow { height: 17px; margin-top: 5px; }
+.fr-nowrow { height: 11px; margin-top: 4px; }
+.fr-markers .fr-cell { height: 100%; }
 
 .fr-nowpill {
   font-size: 8px;
@@ -247,8 +240,8 @@
   .fr-runrail::before,
   .fr-runrail::after { bottom: -1.5px; height: 5px; width: 2px; }
 
-  .fr-markers .fr-cell { padding-top: 4px; }
-  .fr-markerslot { height: 10px; gap: 2px; }
+  .fr-sunrow { height: 10px; margin-top: 4px; }
+  .fr-nowrow { height: 9px; margin-top: 3px; }
 
   .fr-nowpill {
     font-size: 6.5px;
@@ -260,6 +253,25 @@
 
   .fr-hours .fr-cell { padding-top: 5px; }
   .fr-hr { font-size: clamp(6px, 1.8vw, 7.5px); }
+}
+
+/* Desktop windows a little taller than the iframe tier: trim spacing (not
+   type sizes) so all four cards still fit without scrolling. */
+@media (min-width: 721px) and (max-height: 820px) {
+  .fr-page { padding-top: 10px; padding-bottom: 8px; }
+  .fr-pagehead { margin-bottom: 8px; }
+  .fr-days { gap: 10px; }
+  .fr-daycard { padding-top: 8px; padding-bottom: 6px; }
+
+  .fr-daycard-head {
+    margin-bottom: 4px;
+    min-height: 0;
+  }
+
+  .fr-pagefoot {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
 }
 
 /* Short viewports (iframe embeds): compress spacing so the header, all
@@ -285,8 +297,8 @@
 
   .fr-daydate { font-size: 12.5px; }
 
-  .fr-markers .fr-cell { padding-top: 2px; }
-  .fr-markerslot { height: 9px; gap: 2px; }
+  .fr-sunrow { height: 9px; margin-top: 2px; }
+  .fr-nowrow { height: 8px; margin-top: 2px; }
   .fr-nowpill { font-size: 6px; padding: 1px 3px; }
   .fr-sun-ic { width: 12px; height: 9px; }
 
